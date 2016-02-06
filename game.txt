@@ -1,0 +1,55 @@
+;setup;
+	text: fork in the road
+	
+	if: item(moo >= 100)
+		option: item
+			info: You gain 500 health!
+			health: +500|You died
+			info: you find 500 moos
+			item: moo+500
+			goto: ;setup;
+		option: hasMOOs
+			info: this was just a test
+			goto: ;setup;
+		endoption
+	endif
+	
+	if: life(> 100)
+		option: highHealth!
+			info: wow high health
+			goto: ;setup;
+		endoption
+	endif
+	
+	if: gameclock(> 10)
+		option: you have lived over 10 moves
+			info: wow high gameclock
+			goto: ;setup;
+		endoption
+	endif
+	
+	option: get free moos
+		goto: ;moos;
+	option: lose health
+		info: you lose 500 health
+		health: -500|You died
+		goto: ;setup;
+	option: end game
+		endgame: moo
+	endoption
+end
+
+;moos;
+	text: You found a moo farm and were given 500 moos
+	
+	item: moo+500
+	info: moo + 500!
+	
+	option: give back moos
+		info: Why... idk but you give them all back
+		item: moo-500
+		goto: ;setup;
+	option: back
+		goto: ;setup;
+	endoption
+end
