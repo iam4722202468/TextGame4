@@ -51,11 +51,63 @@ bool GameController::checkConditionGeneric(int (GameController::*getValueFunctio
 	return false;
 }
 
+std::string parseConditionBoolean(std::string condition)
+{
+	int inBracket;
+	std::string bracketCondition;
+	
+	for(int place = 0; place < condition.length(); place++)
+	{
+		if(condition[place] == '(')
+			inBracket = place;
+		else if(condition[place] == ')')
+		{ 
+			bracketCondition = condition.substr(inBracket+1, place-inBracket-1);
+			condition.erase(inBracket, place-inBracket+1);
+			condition.insert(inBracket, parseConditionBoolean(bracketCondition));
+			place -= place-inBracket+1 - inBracket;
+		}
+	}
+	
+	bool conditionBoolean;
+	bool didAction;
+	
+	std::cout << "-> " << condition << std::endl;
+	
+	for(int place = 0; place < condition.length(); place++)
+	{
+		didAction = false;
+		if(condition[place] == '&')
+		{
+			conditionBoolean = condition[place-1]-48 && condition[place+1]-48;
+			didAction = true;
+		}
+		else if(condition[place] == '|')
+		{
+			conditionBoolean = condition[place-1]-48 || condition[place+1]-48;
+			didAction = true;
+		}
+		
+		if(didAction)
+		{
+			condition.erase(place-1, 3);
+			
+			if(conditionBoolean)
+				condition.insert(place-1, "1");
+			else
+				condition.insert(place-1, "0");
+		}
+	}
+	std::cout << condition << std::endl;
+	return condition;
+}
+
 bool GameController::checkCondition(std::string condition)
 {
 	condition = removeWhiteSpace(condition, '\n');
-	
 	std::string checkFor[] = {"item", "life", "gameclock"};
+	
+	bool reply; //if it doesn't reply try emailing them to make sure they got the text
 	
 	if(condition == "")
 		return true;
@@ -74,23 +126,23 @@ bool GameController::checkCondition(std::string condition)
 						else
 							break;
 					}
+					
+					reply = false;
+					condition = condition.erase(place, itemString.length()+searchPlace.length()+2);
+					
 					if(searchPlace == "item") //add 0 and 1's here
-						if(checkConditionGeneric(&GameController::getItemAmount, itemString))
-						{
-							return true;
-						}
+						reply = checkConditionGeneric(&GameController::getItemAmount, itemString);
 					if(searchPlace == "life")
-						if(checkConditionGeneric(&GameController::getLife, itemString))
-						{
-							return true;
-						}
+						reply = checkConditionGeneric(&GameController::getLife, itemString);
 					if(searchPlace == "gameclock")
-						if(checkConditionGeneric(&GameController::getGameClock, itemString))
-						{
-							return true;
-						}
+						reply = checkConditionGeneric(&GameController::getGameClock, itemString);
+					
+					if(reply)
+						condition.insert(place, "1");
+					else
+						condition.insert(place, "0");
 				}
-		
-		return false;
+				
+		return parseConditionBoolean(condition)[0]-48;
 	}
 }

@@ -1,7 +1,7 @@
 ;setup;
 	text: fork in the road
 	
-	if: item(moo >= 100)
+	if: (item(moo >= 10)&item(moo >= 1000))|(life(> 1000)|gameclock(> 10))
 		option: item
 			info: You gain 500 health!
 			health: +500|You died
@@ -14,7 +14,7 @@
 		endoption
 	endif
 	
-	if: life(> 100)
+	if: life(> 1000)
 		option: highHealth!
 			info: wow high health
 			goto: ;setup;
