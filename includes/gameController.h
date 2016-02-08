@@ -63,11 +63,20 @@ class GameController
 	std::string doHealth(std::string command);
 	
 	bool addItem(std::string itemString);
+	bool addVariable(std::string variableString);
+	
 	bool checkCondition(std::string condition);
-	std::string doCommand(Command* command); //return storyline, otherwise return empty string
+	
+	bool checkVariable(std::string variableCondition);
+	
+	std::string doCommand(Command* command); //return storyline or game ending, otherwise return empty string
 	std::string doCommandBlock(std::vector<Command*> &commands);
 	
+	std::string doMacros(std::string macroString);
+	
 	int getItemAmount(std::string itemName);
+	std::string getVariableValue(std::string variable);
+	
 	int getLife(std::string lolineedthis){ return health;}
 	int getGameClock(std::string lolineedthis){ return gameClock;}
 	

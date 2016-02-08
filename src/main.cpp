@@ -1,5 +1,4 @@
 #include <string>
-
 #include "gameController.h"
 
 int main()

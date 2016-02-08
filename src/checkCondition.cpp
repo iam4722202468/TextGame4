@@ -13,6 +13,13 @@ int GameController::getItemAmount(std::string itemName)
 	return 0;
 }
 
+std::string GameController::getVariableValue(std::string variable)
+{
+	for(int place = 0; place < variables.size(); place++)
+		if(variables.at(place) == variable)
+			return variablesValue.at(place);
+}
+
 bool GameController::checkConditionGeneric(int (GameController::*getValueFunction)(std::string toSend), std::string itemString)
 {
 	std::string operations[] = {"<=", ">=", "==", "!=", "<", ">"};
@@ -71,8 +78,7 @@ std::string parseConditionBoolean(std::string condition)
 	
 	bool conditionBoolean;
 	bool didAction;
-	
-	std::cout << "-> " << condition << std::endl;
+	std::string tempChar;
 	
 	for(int place = 0; place < condition.length(); place++)
 	{
@@ -87,7 +93,16 @@ std::string parseConditionBoolean(std::string condition)
 			conditionBoolean = condition[place-1]-48 || condition[place+1]-48;
 			didAction = true;
 		}
-		
+		else if(condition[place] == '!')
+		{
+			if(condition[place+1] == '0')
+				tempChar = "1";
+			else
+				tempChar = "0";
+			
+			condition.erase(place, 2);
+			condition.insert(place, tempChar);
+		}
 		if(didAction)
 		{
 			condition.erase(place-1, 3);
@@ -98,14 +113,38 @@ std::string parseConditionBoolean(std::string condition)
 				condition.insert(place-1, "0");
 		}
 	}
-	std::cout << condition << std::endl;
 	return condition;
+}
+
+bool GameController::checkVariable(std::string variableString)
+{
+	variableString = removeWhiteSpace(variableString, '\n');
+	
+	std::string variableName;
+	std::string variableValue;
+	bool found = false;
+	
+	for(int place = 0; place < variableString.length(); place++)
+	{
+		if(variableString[place] == '=')
+			found = true;
+		else if(found)
+			variableValue += variableString[place];
+		else
+			variableName += variableString[place];
+	}
+	
+	for(int place = 0; place < variables.size(); place++)
+		if(variables.at(place) == variableName && variablesValue.at(place) == variableValue)
+			return true;
+	
+	return false;
 }
 
 bool GameController::checkCondition(std::string condition)
 {
 	condition = removeWhiteSpace(condition, '\n');
-	std::string checkFor[] = {"item", "life", "gameclock"};
+	std::string checkFor[] = {"item", "life", "gameclock", "var"};
 	
 	bool reply; //if it doesn't reply try emailing them to make sure they got the text
 	
@@ -136,6 +175,8 @@ bool GameController::checkCondition(std::string condition)
 						reply = checkConditionGeneric(&GameController::getLife, itemString);
 					if(searchPlace == "gameclock")
 						reply = checkConditionGeneric(&GameController::getGameClock, itemString);
+					if(searchPlace == "var")
+						reply = checkVariable(itemString);
 					
 					if(reply)
 						condition.insert(place, "1");

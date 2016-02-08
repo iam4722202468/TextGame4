@@ -11,6 +11,7 @@
 
 #include "gameController.h"
 #include "extras.h"
+#include "calculate.h"
 
 GameController::GameController()
 {
@@ -146,26 +147,133 @@ std::string GameController::doHealth(std::string command)
 	return "";
 }
 
+bool GameController::addVariable(std::string variableString)
+{
+	variableString = removeWhiteSpace(variableString, '\n');
+	
+	std::string variableName;
+	std::string variableValue;
+	bool found = false;
+	
+	for(int place = 0; place < variableString.length(); place++)
+	{
+		if(variableString[place] == '=')
+			found = true;
+		else if(found)
+			variableValue += variableString[place];
+		else
+			variableName += variableString[place];
+	}
+	
+	int variablePlace = -1;
+	
+	for(int place = 0; place < variables.size(); place++)
+		if(variables.at(place) == variableName)
+		{
+			variablePlace = place;
+			break;
+		}
+	
+	if(variablePlace > -1)
+		variablesValue.at(variablePlace) = variableValue;
+	else
+	{
+		variables.push_back(variableName);
+		variablesValue.push_back(variableValue);
+	}
+	
+	return true;
+}
+
+std::string GameController::doMacros(std::string macroString)
+{
+	std::string commandList[] = {"$item(", "$storyline", "$health", "$var(", "$calc("};
+	int endBracket, inBracket, outBracket;
+	
+	int value;
+	std::string valuestr;
+	
+	for(int place = 0; place < macroString.length(); place++)
+		for(std::string command : commandList)
+			if(macroString.substr(place,command.size()) == command)
+			{				
+				endBracket = -1;
+				inBracket = 0;
+				outBracket = 0;
+				
+				if(command[command.length()-1] == '(')
+					for(int subPlace = place; subPlace < macroString.length(); subPlace++)
+					{
+						if(macroString[subPlace] == ')')
+							outBracket++;
+						else if(macroString[subPlace] == '(')
+							inBracket++;
+						if(inBracket == outBracket && inBracket != 0)
+						{
+							endBracket = subPlace;
+							break;
+						}
+					}
+				
+				if(command == "$item(")
+				{
+					value = getItemAmount(doMacros(macroString.substr(place+command.length(), endBracket-place-command.length())));
+					macroString.erase(place, endBracket-place+1);
+					macroString.insert(place, std::to_string(value));
+				}
+				else if(command == "$storyline")
+				{
+					macroString.erase(place, command.length());
+					macroString.insert(place, storyline);
+				}
+				else if(command == "$health")
+				{
+					macroString.erase(place, command.length());
+					macroString.insert(place, std::to_string(health));
+				}
+				else if(command == "$var(")
+				{
+					valuestr = getVariableValue(doMacros(macroString.substr(place+command.length(), endBracket-place-command.length())));
+					macroString.erase(place, endBracket-place+1);
+					macroString.insert(place, valuestr);
+				}
+				else if(command == "$calc(")
+				{
+					valuestr = solve(doMacros(macroString.substr(place+command.length(), endBracket-place-command.length())), 0);
+					macroString.erase(place, endBracket-place+1);
+					macroString.insert(place, valuestr);
+				}
+				
+					
+			}
+	
+	return macroString;
+}
+
 std::string GameController::doCommand(Command* command)
 {
+	std::string macroCommand;
+	
 	if(checkCondition(command->condition))
 	{
+		macroCommand = doMacros(command->command);
+		
 		if(command->commandType == "item")
-			addItem(command->command);
+			addItem(macroCommand);
 		else if(command->commandType == "endgame")
-			return command->command;
+			return macroCommand;
 		else if(command->commandType == "goto")
-			return command->command;
+			return macroCommand;
 		else if(command->commandType == "rand")
-			return doRand(command->command);
+			return doRand(macroCommand);
 		else if(command->commandType == "health")
-			return doHealth(command->command);
+			return doHealth(macroCommand);
 		else if(command->commandType == "include")
-			parseFile(command->command);
+			parseFile(macroCommand);
 		else if(command->commandType == "info")
-			std::cout << command->command << std::endl;
-		//else if(command->commandType == "var")
-			//shit is about to get real
+			std::cout << macroCommand << std::endl;
+		else if(command->commandType == "var")
+			addVariable(macroCommand);
 	}
 	
 	return "";
@@ -176,7 +284,7 @@ bool GameController::addItem(std::string itemString)
 	bool foundPlace = false;
 	
 	char operation = ' ';
-	char operationChars[] = {'+', '-', '/', '*'};
+	char operationChars[] = {'+', '-', '/', '*', '='};
 	
 	std::string itemName;
 	std::string amount;
@@ -215,6 +323,9 @@ bool GameController::addItem(std::string itemString)
 				break;
 				case '*':
 					itemsAmount.at(place) *= std::stoi(amount);
+				break;
+				case '=':
+					itemsAmount.at(place) = std::stoi(amount);
 				break;
 			}
 			

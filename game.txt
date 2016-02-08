@@ -1,8 +1,12 @@
 ;setup;
 	text: fork in the road
+	var: moo = muu
+	info: the current storyline is $storyline and your health is $health
+	info: moo is $calc(1+1+1+0.5+int(10.7))
 	
 	if: (item(moo >= 10)&item(moo >= 1000))|(life(> 1000)|gameclock(> 10))
 		option: item
+			var: moo = true
 			info: You gain 500 health!
 			health: +500|You died
 			info: you find 500 moos
@@ -10,6 +14,12 @@
 			goto: ;setup;
 		option: hasMOOs
 			info: this was just a test
+			goto: ;setup;
+		endoption
+	endif
+	
+	if: var(moo=true)
+		option: Moo is true!
 			goto: ;setup;
 		endoption
 	endif
