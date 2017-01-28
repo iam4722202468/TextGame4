@@ -11,23 +11,23 @@ class Command;
 
 class Storyline
 {
-	private:
-	GameController *currentGame;
-	
-	int getresponse(int options);
-	
-	std::string data;
-	std::string text;
-	
-	public:
-	
-	std::vector<Option*> options;
-	std::vector<Command*> commands; //to be ran when option is chosen
-	
-	std::string storylineName;
-	Storyline(std::string data, std::string storylineName, GameController* currentGame_);
-	std::string getOption();
-	int displayOptions(std::vector<Option*> &chooseFrom);
+    private:
+    GameController *currentGame;
+    
+    int getresponse(int options);
+    
+    std::string data;
+    std::string text;
+    
+    public:
+    
+    std::vector<Option*> options;
+    std::vector<Command*> commands; //to be ran when option is chosen
+    
+    std::string storylineName;
+    Storyline(std::string data, std::string storylineName, GameController* currentGame_);
+    std::string getOption(std::string userInput, std::vector<Option*> &chooseFrom);
+    void displayOptions(std::vector<Option*> &chooseFrom, std::vector<std::string> &returnOptions);
 };
 
 #endif
