@@ -62,8 +62,6 @@ void Storyline::displayOptions(std::vector<Option*> &chooseFrom, std::vector<std
     
     returnOptions.push_back(text);
     
-    currentGame->doCommandBlock(commands);
-    
     for(int counter = 0; counter < options.size(); counter++)
     {
         if(currentGame->checkCondition(options.at(counter)->condition))

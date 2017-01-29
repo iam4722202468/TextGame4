@@ -13,8 +13,7 @@
 #include "extras.h"
 #include "calculate.h"
 
-GameController::GameController(std::string sessionKey) :
-    sessionKey(sessionKey)
+GameController::GameController()
 {
     health = 100;
     gameClock = 0;
@@ -51,6 +50,7 @@ void GameController::getOptions(std::vector<std::string> &toReturn)
         if(place->storylineName == storyline)
         {
             place->displayOptions(chooseFrom, toReturn);
+            doCommandBlock(place->commands);
             break;
         }
     

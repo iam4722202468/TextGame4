@@ -31,7 +31,7 @@ class GameController
 {
     public:
     
-    GameController(std::string sessionKey);
+    GameController();
     
     PlayerInfo player;
     
@@ -52,7 +52,6 @@ class GameController
     std::vector<Option*> chooseFrom;
     
     std::string storyline;
-    std::string sessionKey;
     
     int health;
     
