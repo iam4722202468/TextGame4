@@ -5,6 +5,14 @@
 #include "option.h"
 #include "extras.h"
 
+Option::~Option()
+{
+    for(auto i : commands)
+        delete i;
+    
+    commands.clear();
+}
+
 Option::Option(std::string data, int optionNumber_, std::string optionTitle_, std::string condition_, GameController *currentGame_) :
     optionNumber(optionNumber_),
     optionTitle(optionTitle_),

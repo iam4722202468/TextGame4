@@ -7,6 +7,19 @@
 #include "extras.h"
 #include "option.h"
 
+Storyline::~Storyline()
+{
+    for(auto i : options)
+        delete i;
+    
+    options.clear();
+    
+    for(auto i : commands)
+        delete i;
+    
+    commands.clear();
+}
+
 Storyline::Storyline(std::string data_, std::string storylineName_, GameController *currentGame_):
     currentGame(currentGame_),
     data(data_),

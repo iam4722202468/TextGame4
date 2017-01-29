@@ -25,6 +25,7 @@ class Option {
     std::string condition;
     
     Option(std::string data, int optionNumber_, std::string optionTitle_, std::string condition_, GameController* currentGame_);
+    ~Option();
     
 };
 

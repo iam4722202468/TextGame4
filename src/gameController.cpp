@@ -19,13 +19,21 @@ GameController::GameController()
     gameClock = 0;
 }
 
+GameController::~GameController()
+{
+    for(auto i : storylines)
+        delete i;
+    
+    storylines.clear();
+}
+
 int GameController::addStoryline(std::string storylineName, std::string storylineData)
 {
     storylines.push_back(new Storyline(storylineData, storylineName, this));
     return 0;
 }
 
-void GameController::sendInput(std::string input)
+bool GameController::sendInput(std::string input)
 {
     std::string returnString;
     
@@ -37,10 +45,13 @@ void GameController::sendInput(std::string input)
             if(returnString[0] != ';')
             {
                 std::cout << returnString << std::endl;
-                return;
+                return 0;
             }
             else
+            {
                 storyline = returnString;
+                return 1;
+            }
         }
 }
 

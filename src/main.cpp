@@ -39,7 +39,7 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
         
         std::getline(std::cin,userInput);
         
-        //userInput += " MOO";
+        //userInput += " moo";
         
         gameNameIndex = userInput.find_last_of(" ");
         gameName = userInput.substr(gameNameIndex+1, userInput.size());
@@ -94,18 +94,29 @@ int main()
     mainGameVector.at(0)->game->storyline = ";setup;";
     printOptions(0, &mainGameVector);
     
+    mainGameVector.push_back(new GameContainer);
+    mainGameVector.at(1)->game = new GameController();
+    mainGameVector.at(1)->sessionKey = "moo2";
+    mainGameVector.at(1)->game->parseFile("game.txt");
+    mainGameVector.at(1)->game->storyline = ";setup;";
+    printOptions(1, &mainGameVector);
+    
     std::string userInput;
     int gameIndex;
     
-    while(true)
+    while(mainGameVector.size() > 0)
     {
         usleep(100);
         
-        //make closing games work
-        
         userInput = getUserInput(&mainGameVector, &gameIndex);
-        mainGameVector.at(gameIndex)->game->sendInput(userInput);
-        printOptions(gameIndex, &mainGameVector);
+        if(!mainGameVector.at(gameIndex)->game->sendInput(userInput))
+        {
+            delete mainGameVector.at(gameIndex)->game;
+            delete mainGameVector.at(gameIndex);
+            mainGameVector.erase(mainGameVector.begin() + gameIndex);
+        }
+        else
+            printOptions(gameIndex, &mainGameVector);
     }
     
     return 0;

@@ -32,6 +32,7 @@ class GameController
     public:
     
     GameController();
+    ~GameController();
     
     PlayerInfo player;
     
@@ -58,7 +59,7 @@ class GameController
     bool parseFile(std::string fileName);
     int addStoryline(std::string storylineName, std::string storylineData); //return index of new storyline
     
-    void sendInput(std::string input);
+    bool sendInput(std::string input);
     void getOptions(std::vector<std::string> &toReturn);
     
     bool parseLine(std::string line, std::string currentCondition, std::vector<Command*> &commands); //line parsing here so it can be accessed by options and storylines

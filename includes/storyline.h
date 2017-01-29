@@ -26,6 +26,7 @@ class Storyline
     
     std::string storylineName;
     Storyline(std::string data, std::string storylineName, GameController* currentGame_);
+    ~Storyline();
     std::string getOption(std::string userInput, std::vector<Option*> &chooseFrom);
     void displayOptions(std::vector<Option*> &chooseFrom, std::vector<std::string> &returnOptions);
 };
