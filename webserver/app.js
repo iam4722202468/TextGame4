@@ -23,10 +23,11 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'html'));
 
 app.use('/', misc);
+app.use('/', findGames);
+
 app.use('/contact', misc);
 app.use('/about', misc);
 
-app.use('/', findGames);
 /// catch 404 and forward to error handler
 app.use(function(req, res, next) {
     var err = new Error('Not Found');

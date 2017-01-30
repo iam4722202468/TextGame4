@@ -5,26 +5,24 @@ var fs = require('fs');
 
 var baseFilePath = '/../html/'
 
-function findGames()
+function findGames(callback_)
 {
     fs.readFile('../info', function (err, data) {
         if (err) throw err;
-            console.log(JSON.parse(data));
+            callback_(JSON.parse(data));
     });
-    
-    return "MOO"
 }
 
 router.get('/findgame', function(req, res) {
-    games = findGames();
-    
-    ejs.renderFile(__dirname + baseFilePath + 'selectGame.html', {active:"Find"}, function(err, result) {
-        if (!err) {
-            res.end(result);
-        } else {
-            res.end(err.toString());
-            console.log(err);
-        }
+    findGames(function(games) {
+        ejs.renderFile(__dirname + baseFilePath + 'findGame.html', {active:"Find", games:games}, function(err, result) {
+            if (!err) {
+                res.end(result);
+            } else {
+                res.end(err.toString());
+                console.log(err);
+            }
+        });
     });
 });
 
