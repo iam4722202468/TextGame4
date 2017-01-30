@@ -31,7 +31,7 @@ class GameController
 {
     public:
     
-    GameController();
+    GameController(std::string sessionKey);
     ~GameController();
     
     PlayerInfo player;
@@ -42,6 +42,7 @@ class GameController
     std::string maxInventory;
     
     int gameClock; //increases for every option chosen
+    std::string sessionKey;
     
     std::vector<std::string> items;
     std::vector<int> itemsAmount;

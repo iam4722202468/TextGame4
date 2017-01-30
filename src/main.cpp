@@ -2,6 +2,7 @@
 #include <unistd.h>
 #include <string>
 #include "gameController.h"
+#include "extras.h"
 
 struct GameContainer
 {
@@ -18,6 +19,19 @@ int findGamePlace(std::vector<GameContainer*> *mainGameVector, std::string gameN
             return i;
             
     return -1;
+}
+
+int printOptions(int gameIndex, std::vector<GameContainer*> *mainGameVector)
+{
+    mainGameVector->at(gameIndex)->optionNumber = 0;
+    mainGameVector->at(gameIndex)->game->getOptions(mainGameVector->at(gameIndex)->optionVector);
+    
+    for(auto w : mainGameVector->at(gameIndex)->optionVector)
+    {
+        std::cout << w << " " << mainGameVector->at(gameIndex)->sessionKey << std::endl;
+        if(w.find("    ") == 0)
+            mainGameVector->at(gameIndex)->optionNumber++;
+    }
 }
 
 std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameIndex)
@@ -39,76 +53,89 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
         
         std::getline(std::cin,userInput);
         
-        //userInput += " moo";
+        //userInput += " moo|";
         
-        gameNameIndex = userInput.find_last_of(" ");
-        gameName = userInput.substr(gameNameIndex+1, userInput.size());
-        userInput.erase(userInput.begin() + gameNameIndex, userInput.end());
-        
-        *gameIndex = findGamePlace(mainGameVector, gameName);
-        if(*gameIndex >= 0)
-            options = mainGameVector->at(*gameIndex)->optionNumber;
-        
-        try {
-            chosenint = stoi(userInput);
-        } catch(...) {
-            chosenint = -1;
-        }
-        
-        std::cin.clear();
-        
-        if(*gameIndex >= 0 && chosenint <= 0)
+        // Input is from user
+        /* Ends with |
+         */
+        if(userInput[userInput.size()-1] == '|')
         {
-            if(mainGameVector->at(*gameIndex)->game->getItems() == "")
-                std::cout << "You currently have no items\n";
-            else
-                std::cout << "You have: " << mainGameVector->at(*gameIndex)->game->getItems() << std::endl;
-            std::cout << "Your health is currently " << mainGameVector->at(*gameIndex)->game->health << std::endl;
+            gameNameIndex = userInput.find_last_of(" ");
+            gameName = userInput.substr(gameNameIndex+1, userInput.size() - gameNameIndex - 2);
+            userInput.erase(userInput.begin() + gameNameIndex, userInput.end());
+            
+            *gameIndex = findGamePlace(mainGameVector, gameName);
+            if(*gameIndex >= 0)
+                options = mainGameVector->at(*gameIndex)->optionNumber;
+            
+            try {
+                chosenint = stoi(userInput);
+            } catch(...) {
+                chosenint = -1;
+            }
+            
+            std::cin.clear();
+            
+            if(*gameIndex >= 0 && chosenint <= 0)
+            {
+                if(mainGameVector->at(*gameIndex)->game->getItems() == "")
+                    std::cout << "You currently have no items\n";
+                else
+                    std::cout << "You have: " << mainGameVector->at(*gameIndex)->game->getItems() << std::endl;
+                std::cout << "Your health is currently " << mainGameVector->at(*gameIndex)->game->health << std::endl;
+            }
+        }
+        //Server command//
+        /* NEW <sessionkey> <gameFile> <startlocation>
+         * DELETE <sessionkey>
+         * INFO <sessionkey>
+         */
+        else 
+        {
+            std::vector<std::string> splitText;
+            stringsplit(' ', userInput, splitText);
+            
+            if(splitText.at(0) == "NEW" && splitText.size() == 4) {
+                mainGameVector->push_back(new GameContainer);
+                mainGameVector->at(mainGameVector->size()-1)->game = new GameController(splitText.at(1)); //moo
+                mainGameVector->at(mainGameVector->size()-1)->sessionKey = splitText.at(1); //moo
+                mainGameVector->at(mainGameVector->size()-1)->game->parseFile(splitText.at(2)); //game.txt
+                mainGameVector->at(mainGameVector->size()-1)->game->storyline = splitText.at(3); //;setup;
+                printOptions(mainGameVector->size()-1, mainGameVector);
+                
+                //std::cout << "CREATED " << splitText.at(1) << std::endl;
+            } else if(splitText.at(0) == "DELETE" && splitText.size() == 2) {
+                *gameIndex = findGamePlace(mainGameVector, splitText.at(1));
+                
+                if(*gameIndex != -1)
+                {
+                    delete mainGameVector->at(*gameIndex)->game;
+                    delete mainGameVector->at(*gameIndex);
+                    mainGameVector->erase(mainGameVector->begin() + *gameIndex);
+                    //std::cout << "DELETED " << splitText.at(1) << std::endl;
+                }
+            } else if(splitText.at(0) == "INFO" && splitText.size() == 2) {
+                //put stuff here
+            }
         }
     }
     
     return std::to_string(chosenint-1);
 }
 
-int printOptions(int gameIndex, std::vector<GameContainer*> *mainGameVector)
-{
-    mainGameVector->at(gameIndex)->optionNumber = 0;
-    mainGameVector->at(gameIndex)->game->getOptions(mainGameVector->at(gameIndex)->optionVector);
-    
-    for(auto w : mainGameVector->at(gameIndex)->optionVector)
-    {
-        std::cout << w << std::endl;
-        if(w.find("    ") == 0)
-            mainGameVector->at(gameIndex)->optionNumber++;
-    }
-}
-
 int main()
 {
     std::vector<GameContainer*> mainGameVector;
     
-    mainGameVector.push_back(new GameContainer);
-    mainGameVector.at(0)->game = new GameController();
-    mainGameVector.at(0)->sessionKey = "moo";
-    mainGameVector.at(0)->game->parseFile("game.txt");
-    mainGameVector.at(0)->game->storyline = ";setup;";
-    printOptions(0, &mainGameVector);
-    
-    mainGameVector.push_back(new GameContainer);
-    mainGameVector.at(1)->game = new GameController();
-    mainGameVector.at(1)->sessionKey = "moo2";
-    mainGameVector.at(1)->game->parseFile("game.txt");
-    mainGameVector.at(1)->game->storyline = ";setup;";
-    printOptions(1, &mainGameVector);
-    
     std::string userInput;
     int gameIndex;
     
-    while(mainGameVector.size() > 0)
+    while(true)
     {
         usleep(100);
         
         userInput = getUserInput(&mainGameVector, &gameIndex);
+        
         if(!mainGameVector.at(gameIndex)->game->sendInput(userInput))
         {
             delete mainGameVector.at(gameIndex)->game;

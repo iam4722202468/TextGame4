@@ -1,0 +1,21 @@
+      <nav class="navbar navbar-inverse navbar-static-top">
+        <div class="container">
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target=".navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">Text Game 4</a>
+          </div>
+          <div class="navbar-collapse collapse">
+            <ul class="nav navbar-nav">
+              <li <%if (active == "Home") { %>class="active" <% } %> ><a href="/">Home</a></li>
+              <li <%if (active == "Find") { %>class="active" <% } %> ><a href="/findgame">Find Game</a></li>
+              <li <%if (active == "About") { %>class="active" <% } %> ><a href="/about">About</a></li>
+              <li <%if (active == "Contact") { %>class="active" <% } %> ><a href="/contact">Contact</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </nav>

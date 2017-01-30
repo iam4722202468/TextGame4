@@ -89,13 +89,8 @@ void Storyline::displayOptions(std::vector<Option*> &chooseFrom, std::vector<std
 
 std::string Storyline::getOption(std::string userInput, std::vector<Option*> &chooseFrom)
 {
-    int chosenInt = -1;
-    
-    try {
-        chosenInt = stoi(userInput);
-    } catch(...) {
-        chosenInt = -1;
-    }
+    int chosenInt = stoi(userInput);
+    currentGame->gameClock++;
     
     return currentGame->doCommandBlock(chooseFrom.at(chosenInt)->commands); //do commands for option
 }

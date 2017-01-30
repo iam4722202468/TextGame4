@@ -13,7 +13,8 @@
 #include "extras.h"
 #include "calculate.h"
 
-GameController::GameController()
+GameController::GameController(std::string sessionKey) :
+    sessionKey(sessionKey)
 {
     health = 100;
     gameClock = 0;
@@ -44,7 +45,7 @@ bool GameController::sendInput(std::string input)
             
             if(returnString[0] != ';')
             {
-                std::cout << returnString << std::endl;
+                std::cout << returnString << " " << sessionKey << std::endl;
                 return 0;
             }
             else
@@ -70,8 +71,6 @@ void GameController::getOptions(std::vector<std::string> &toReturn)
 
 std::string GameController::doCommandBlock(std::vector<Command*> &commands)
 {
-    gameClock++;
-    
     std::string returnString = "";
     for(auto place : commands)
     {
@@ -299,7 +298,7 @@ std::string GameController::doCommand(Command* command)
         else if(command->commandType == "include")
             parseFile(macroCommand);
         else if(command->commandType == "info")
-            std::cout << macroCommand << std::endl;
+            std::cout << macroCommand << " " << sessionKey << std::endl;
         else if(command->commandType == "var")
             addVariable(macroCommand);
     }
