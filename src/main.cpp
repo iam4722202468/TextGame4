@@ -29,6 +29,7 @@ int printOptions(int gameIndex, std::vector<GameContainer*> *mainGameVector)
     for(auto w : mainGameVector->at(gameIndex)->optionVector)
     {
         std::cout << w << " " << mainGameVector->at(gameIndex)->sessionKey << std::endl;
+        //std::cout << w << std::endl;
         if(w.find("    ") == 0)
             mainGameVector->at(gameIndex)->optionNumber++;
     }
@@ -53,7 +54,9 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
         
         std::getline(std::cin,userInput);
         
+        /////
         //userInput += " moo|";
+        /////
         
         // Input is from user
         /* Ends with |
@@ -130,6 +133,15 @@ int main()
     std::string userInput;
     int gameIndex;
     
+    /*
+    mainGameVector.push_back(new GameContainer);
+    mainGameVector.at(mainGameVector.size()-1)->game = new GameController("moo"); //moo
+    mainGameVector.at(mainGameVector.size()-1)->sessionKey = "moo"; //moo
+    mainGameVector.at(mainGameVector.size()-1)->game->parseFile("irc.txt"); //game.txt
+    mainGameVector.at(mainGameVector.size()-1)->game->storyline = ";1;"; //;setup;
+    printOptions(mainGameVector.size()-1, &mainGameVector);
+    */
+    
     while(true)
     {
         usleep(100);
@@ -138,6 +150,7 @@ int main()
         
         if(!mainGameVector.at(gameIndex)->game->sendInput(userInput))
         {
+            std::cout << "DEATH " << mainGameVector.at(gameIndex)->sessionKey << std::endl;
             delete mainGameVector.at(gameIndex)->game;
             delete mainGameVector.at(gameIndex);
             mainGameVector.erase(mainGameVector.begin() + gameIndex);

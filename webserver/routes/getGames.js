@@ -61,6 +61,18 @@ function getUser(key, callback_)
     });
 }
 
+function dropDatabase()
+{
+    MongoClient.connect(url, function (err, db) {
+        if (err) {
+            console.log('Unable to connect to the mongoDB server. Error:', err);
+            callback_('error');
+        } else {
+            db.dropDatabase();
+        }
+    });
+}
+    
 module.exports = function(mainGameServer)
 {
     function createGame(key, gameInfo, callback_)
@@ -75,8 +87,7 @@ module.exports = function(mainGameServer)
                 collection.update({'UserID': key},{$push: { 'GameKeys': {key:gameKey, path:gameInfo['Path']} }}, function(err) {
                     //add game here
                     //File, Start
-                    console.log("New game created " + JSON.stringify(gameInfo));
-                    
+                    console.log("NEW " + gameKey + " " + gameInfo['File'] + " " + gameInfo['Start'] +'\n');
                     mainGameServer.stdin.write("NEW " + gameKey + " " + gameInfo['File'] + " " + gameInfo['Start'] +'\n');
                     
                     db.close();
@@ -88,5 +99,6 @@ module.exports = function(mainGameServer)
     module.exports.createGame = createGame;
 }
 
+module.exports.dropDatabase = dropDatabase;
 module.exports.createUser = createUser;
 module.exports.getUser = getUser;

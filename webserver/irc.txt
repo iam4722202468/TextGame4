@@ -1,0 +1,483 @@
+//// IRC GAME  ////
+////           ////
+////           ///
+////           ////
+////    BY:    ////
+////  jacob1   ////
+////           ////
+////           ////
+////           ////
+////           ////
+////           ////
+
+;1;
+	text: You are on your computer. You have two IRC clients.
+		option: Start IceChat
+                    info: Everyone makes fun of you and then your computer explodes.
+                    info: -1 Computer
+                    endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+                endoption
+		option: Start Hexchat
+        endoption
+end
+
+;1.2;
+
+	text: You join #powder.
+		option: Also join #powder-bots
+        endoption
+		option: Also join ##werewolf
+        endoption
+		option: Join the conversation
+			rand: ;1.2.3;|;1.2.5;
+        endoption
+		option: Idle
+        endoption
+end
+
+////#powder-bots////
+
+;1.2.1;
+
+	text: Crackbot is in here.
+		option: ./use cow
+                info: Your cows stampede and many escape. You are squished and die.
+                endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+        endoption
+		option: ./use potato
+                info: You plant the potato in the ground. The potato attacks you.
+                endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+        if: (item(SPAMBOT < 1)
+            option: Bring in your own bot
+                item: SPAMBOT+1
+            endoption
+        endif
+        
+		option: Go back to #powder
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.1.3;
+
+	text: SPAMBOT joins ##powder-bots
+		option: !spam
+                info: The bot starts spamming random obscenities. You get banned.
+                endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+        endoption
+        
+        if: (item(Penguin < 1)
+            option: !highlight
+                item: Penguin+1
+            endoption
+        endif
+        
+		option: Go back to #powder
+			goto: ;1.1;
+        endoption
+end
+
+
+;1.2.1.3.2;
+
+	text: The bot highlights everyone in the channel. Everyone yells at you
+		option: Go back to ##powder-bots
+			goto: ;1.2.1;
+        endoption
+end
+
+////##werewolf, ishanyx is seer and no-n is seer-safe////
+
+;1.2.2;
+
+	text: You join a game of werewolf. There are 5 players: Chelsie, ishanyx, no-n, woffle, and you. You are wolf. Everyone is silent.
+		option: kill Chelsie
+        endoption
+		option: kill ishanyx
+        endoption
+		option: kill no-n
+        endoption
+		option: kill woffle
+        endoption
+end
+
+;1.2.2.1;
+
+	text: The dead body of Chelsie, a villager, is found. Those remaining mourn the tragedy.
+		option: Claim seer
+        endoption
+		option: Claim seer-safe
+        endoption
+		option: Do nothing
+        endoption
+end
+
+;1.2.2.1.1;
+
+	text: ishanyx is the real seer and already told no-n he was safe. You are lynched.
+		option: You lose
+			goto: ;wolflynched;
+        endoption
+end
+
+;1.2.2.1.2;
+
+	text: ishanyx says she is the real seer and lynches you.
+		option: Lynch ishanyx back and hope for the best
+			rand: ;wolflynched;|;wolflynched;|;seerlynched;
+        endoption
+end
+
+;1.2.2.1.3;
+
+	text: ishanyx claims seer, with no-n being safe. She decies to lynch you.
+		option: You lose
+			goto: ;wolflynched;
+        endoption
+end
+
+;1.2.2.2;
+
+	text: The dead body of ishanyx, a seer, is found. Those remaining mourn the tragedy.
+		option: Claim seer safe and lynch no-n
+			rand: ;1.2.2.2.1;|;1.2.2.2.1;|;1.2.2.2.3;
+        endoption
+		option: Do nothing
+        endoption
+end
+
+;1.2.2.2.1;
+
+	text: The villagers, after much debate, finally decide on lynching no-n, who turned out to be... a villager
+		option: kill Chelsie
+			item: potato+1
+			goto: ;winresults;
+        endoption
+end
+
+;1.2.2.2.2;
+
+	text: Nobody knows what to do so they just lynch you
+		option: You lose
+			goto: ;wolflynched;
+        endoption
+end
+
+;1.2.2.2.3;
+
+	text: no-n says he is the real seer safe and you get lynched
+		option: You lose
+			goto: ;wolflynched;
+        endoption
+end
+
+;1.2.2.3;
+
+	text: The dead body of no-n, a villager, is found. Those remaining mourn the tragedy.
+		option: Claim seer and lynch ishanyx
+        endoption
+		option: Do nothing
+			rand: ;1.2.2.3.2;|;1.2.2.3.3;
+        endoption
+end
+
+;1.2.2.3.1;
+
+	text: ishanyx also claims seer, and you look slightly suspicious. The village decides to ...
+		option: continue
+			rand: ;wolflynched;|;wolflynched;|;seerlynched;
+        endoption
+end
+
+;1.2.2.3.2;
+
+	text: ishanyx claims seer and decides to lynch woffle
+		option: lynch woffle
+			goto: ;wofflelynched;
+        endoption
+end
+
+;1.2.2.3.3;
+
+	text: ishanyx claims seer and decides to lynch you
+		option: You lose
+			goto: ;wolflynched;
+        endoption
+end
+
+;1.2.2.4;
+
+	text: ishanyx claims seer, and saw no-n as villager
+		option: Claim to be real seer and lynch ishanyx
+        endoption
+		option: Do nothing
+			rand: ;1.2.2.4.2;|;1.2.2.4.3;
+        endoption
+end
+
+;1.2.2.4.1;
+
+	text: Total fail, nobody believes you and she just lynches you
+		option: You lose
+			goto: ;wolflynched;
+        endoption
+end
+
+;1.2.2.4.2;
+
+	text: ishanyx decides to lynch woffle
+		option: Lynch woffle
+			goto: ;wofflelynched;
+        endoption
+end
+
+;1.2.2.4.3;
+
+	text: ishanyx decides to lynch you
+		option: You lose
+			goto: ;wolflynched;
+        endoption
+end
+
+;wolflynched;
+
+	text: The villagers, after much debate, finally decide on lynching $(NAME), who turned out to be... a wolf
+		option: Continue
+				info: The wolf was $(NAME). The seer was ishanyx.
+	endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+        endoption
+end
+
+;seerlynched;
+
+	text: The villagers, after much debate, finally decide on lynching ishanyx, who turned out to be... a seer
+		option: kill woffle
+			item: potato+1
+			goto: ;winresults;
+        endoption
+end
+
+;wofflelynched;
+
+	text: The villagers, after much debate, finally decide on lynching woffle, who turned out to be... a villager
+		option: kill ishanyx
+			item: potato+1
+			goto: ;winresults;
+        endoption
+end
+
+;winresults;
+
+	text: The wolf was $(NAME). The seer was ishanyx.
+		option: You Win! You recieve a potato and go back to #powder
+			goto: ;1.2;
+        endoption
+end
+
+////join conversation in #powder////
+
+;1.2.3;
+
+	text: Doxin posts a link to something on imgur.
+		option: Open link
+        endoption
+		option: Ask Doxin what the link is
+        endoption
+		option: Run far, far away
+                	info: You run far away from IRC, never to return again.
+	endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+        endoption
+end
+
+;1.2.3.1;
+
+	text: It is a picture of a dildo. You are horrified.
+		option: Yell at Doxin for posting it
+                	info: You shame Doxin for posting such inappropriate pictures in #powder. After a large argument, Mortvert bans both of you.
+	endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+        endoption
+		option: Pretend you never saw it
+        endoption
+end
+
+;1.2.3.1.2;
+
+	text: You erase this photo from your memory. Something makes you feel like you should have asked what it was ...
+		option: Continue
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.3.2;
+
+	text: Doxin explains that it his his new Dildo. He accidentally ordered an extra though.
+		option: Compliment his dildo
+                	info: NSFW talk is against the rules, everyone flames you and then you get banned.
+	endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+        endoption
+		option: Ask if you can have the extra
+        endoption
+		option: Pretend you aren't there
+        endoption
+end
+
+;1.2.3.2.2;
+
+	text: Doxin is happy to give you the extra, as long as you become his new boyfriend.
+	item: Dildo+1
+		option: Shudder and go back to #powder
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.3.2.3;
+
+	text: Doxin keeps highlighting you constantly, he knows you are really there.
+		option: Hide some more
+        endoption
+		option: Tell him to stop highlighting you
+                	info: You tell him to stop talking to you. Everyone flames you because you are being so rude and Doxin only was respectfully talking to you about his dildo.
+	endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+        endoption
+end
+
+;1.2.3.2.3.1;
+
+	text: He eventually stops and you can return to normal #powder conversation.
+		option: Continue
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.4;
+
+	text: You idle and wait for something to happen.
+		option: Keep idling
+        endoption
+		option: Check for activity
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.4.1;
+
+	text: You idle and wait for something to happen.
+		option: Keep idling
+        endoption
+		option: Check for activity
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.4.1.1;
+
+	text: You idle and wait for something to happen.
+		option: Keep idling
+        endoption
+		option: Check for activity
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.4.1.1.1;
+
+	text: You idle and wait for something to happen.
+		option: Keep idling
+			item: Coin+1
+            endoption
+		option: Check for activity
+			goto: ;1.2;
+            endoption
+end
+
+;1.2.4.1.1.1.1;
+
+	text: You found a coin
+		option: Keep idling
+                	info: You idle so long that jacob1 bans you for never talking.
+	endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+
+        endoption
+		option: Check for activity
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.5;
+
+	text: mniip wants somebody to run a lua script he made in tpt.
+		option: Tell him that you can do it
+        endoption
+		option: Avoid running scripts from evil russian hackers
+        endoption
+end
+
+;1.2.5.1;
+
+	text: He gives you a link to the script.
+		option: Run script
+			info: -1 SESSION_ID
+        endoption
+		option: Ask how to run the script
+        endoption
+		option: Ask what LUA is
+                	info: You ask mniip about LUA. He is so enraged that you spelled the language of the gods incorrectly that he hacks freenode and bans you from every channel. He then comes to your house, shoots your family, and burns your house down.
+	info: -1 family$(ENDL)-1 house
+	endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+
+        endoption
+end
+
+;1.2.5.1.1;
+
+	text: You run the script. TPT closes. You aren't sure why.
+		option: Continue back to #powder
+			goto: ;1.2;
+        endoption
+end
+
+;1.2.5.1.2;
+
+	text: mniip tells you that you need Linux to run it.
+		option: Install Linux
+			item: Linux+1
+        endoption
+		option: Run it anyway
+			goto: ;1.2.5.1.1;
+        endoption
+		option: Buy a mac
+                	info: You buy a mac. You are forced to sell everything you own to afford it, and when you try to turn it on it burns down your house.
+	info: -1 computer
+    info: -1 car
+    info: -1 dignity
+    info: -1 soul
+    info: -1 house
+	endgame: You learn IRC is a horrible place with many haters and never join again. You live a lonely life with no friends.
+
+        endoption
+end
+
+;1.2.5.1.2.1;
+
+	text: You install Linux. Your computer is now more powerful than the fastest supercomputer
+		option: Return to #powder
+			goto: ;1.2;
+        endoption
+		option: Redownload script
+        endoption
+end
+
+;1.2.5.1.2.1.2;
+
+	text: You download the script
+		option: Run script
+			goto: ;1.2.5.1.1;
+        endoption
+end
+
+
+;1.2.5.2;
+
+	text: You are very curious about what the script does, but go back to #powder anyway.
+	goto: ;1.2;
+end

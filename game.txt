@@ -4,6 +4,10 @@
     info: the current storyline is $storyline and your health is $health
     info: moo is $int($calc(1+1+1+0.5+int(10.7)))
     
+    option: aaaaaaaaa
+        info: moo
+    endoption
+    
     if: (item(moo >= 10)&item(moo >= 1000))|(life(> 1000)|gameclock(> 10))
         option: item
             var: moo = true
@@ -46,6 +50,12 @@
         goto: ;setup;
     option: end game
         endgame: moo
+    endoption
+end
+
+;setup.1;
+    option: back
+        goto: ;setup;
     endoption
 end
 

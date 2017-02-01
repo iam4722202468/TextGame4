@@ -35,6 +35,8 @@ var mainGameServer = require('child_process').spawn('./game')
 require('./routes/manageSocket')(io, mainGameServer);
 require('./routes/getGames')(mainGameServer);
 
+var db = require('./routes/getGames');
+
 app.use('/playGame', playGame);
 
 /// catch 404 and forward to error handler
@@ -67,6 +69,7 @@ app.set('port', process.env.PORT || 3000);
 if(fs.existsSync('../info')) {
     http.listen(app.get('port'), function() {
         console.log('Server listening on port ' + app.get('port'));
+        db.dropDatabase();
     });
 } else {
     console.log("Error: info file not found");

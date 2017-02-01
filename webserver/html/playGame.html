@@ -23,7 +23,7 @@
         var socket = io();
         
         $('#textbox').bind("enterKey",function(e){
-            socket.emit('out', $("#textbox").val());
+            socket.emit('out', $("#textbox").val(), document.cookie);
             $("#log").append("<br><b>>&emsp;&emsp;" + $("#textbox").val() + "</b><br>");
             $("#textbox").val("");
         });
@@ -35,8 +35,15 @@
             }
         });
         
+        socket.on('restarti', function(data) {
+            socket.emit("restarto", document.cookie);
+        });
+        
+        socket.on('newID', function(data) {
+            document.cookie = "currentGame=" + data + "; expires=Thu, 18 Dec 2038 12:00:00 UTC; path=/";
+        });
+        
         socket.on('in', function(data) {
-            console.log(data);
             $("#log").append(data);
             $("html, body").stop();
             $("html, body").animate({ scrollTop: $(document).height() }, "slow");

@@ -6,6 +6,7 @@
 //for random numbers
 #include <cstdlib>
 #include <time.h>
+#include <ctime>
 
 #include <unistd.h>
 
@@ -43,9 +44,14 @@ bool GameController::sendInput(std::string input)
         {
             returnString = place->getOption(input, chooseFrom);
             
-            if(returnString[0] != ';')
+            if(returnString == "")
             {
-                std::cout << returnString << " " << sessionKey << std::endl;
+                storyline[storyline.size()-1] = '.';
+                storyline += std::to_string(stoi(input)+1) + ";";
+                return 1;
+            }
+            else if(returnString[0] != ';')
+            {
                 return 0;
             }
             else
@@ -78,7 +84,7 @@ std::string GameController::doCommandBlock(std::vector<Command*> &commands)
         if(returnString != "")
             return returnString;
     }
-
+    
     return returnString;
 }
 
@@ -123,6 +129,8 @@ bool GameController::parseFile(std::string fileName) //return false on error
 
 std::string doRand(std::string line)
 {
+    srand(time(NULL));
+    
     std::vector<std::string> parts;
     stringsplit('|', line, parts);
 
@@ -131,7 +139,7 @@ std::string doRand(std::string line)
 
     if(parts.size() == 0)
         return "";
-        
+    
     int randnum = rand() % parts.size();
     
     return parts.at(randnum);
@@ -288,7 +296,10 @@ std::string GameController::doCommand(Command* command)
         if(command->commandType == "item")
             addItem(macroCommand);
         else if(command->commandType == "endgame")
-            return macroCommand;
+        {
+            std::cout << macroCommand << " " << sessionKey << std::endl;
+            return "|";
+        }
         else if(command->commandType == "goto")
             return macroCommand;
         else if(command->commandType == "rand")
