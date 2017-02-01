@@ -1,0 +1,89 @@
+#game {
+    font-family: "Courier New", Courier, monospace;
+}
+
+.gameText
+{
+    background: white;
+    color: black;
+    font-family: monospace;
+}
+
+#log
+{
+    color: #555;
+    max-width: 960px;
+    margin-top: 50px;
+}
+
+#log:after
+{
+    content: ' ';
+    display: block;
+    height: 150px;
+}
+
+#log b
+{
+    color: #000;
+}
+
+.textarea
+{
+    background-color: rgba(255, 255, 255, 0.5);
+    bottom: 50px;
+    height: 50px;
+    left: 8px;
+    max-width: 960px;
+    position: fixed;
+    right: 20px;
+}
+#lts
+{
+    font-size: 14pt;
+}
+#textbox
+{
+    background-color: white;
+    border: 2px solid rgba(0, 0, 0, 0.1);
+    color: black;
+    font-family: monospace;
+    font-size: 16px;
+    margin-left: 5px;
+    width: 95%;
+}
+.line
+{
+    white-space: pre-line;
+}
+@media screen and (min-width: 910px)
+{
+    .textarea,#log
+    {
+        margin-left: 192px !important;
+        margin-right: 192px !important;
+    }
+}
+@media screen and (max-width: 500px)
+{
+    #lts
+    {
+        display: none;
+    }
+}
+
+.restart {
+    box-shadow: 0px 1px 0px 0px #FFF inset;
+    background: #F9F9F9 linear-gradient(to bottom, #F9F9F9 5%, #E9E9E9 100%) repeat scroll 0% 0%;
+    border-radius: 6px;
+    border: 1px solid #DCDCDC;
+    display: inline-block;
+    cursor: pointer;
+    color: #666;
+    font-family: Arial;
+    font-size: 15px;
+    font-weight: bold;
+    padding: 6px 18px;
+    text-decoration: none;
+    text-shadow: 0px 1px 0px #FFF;
+}

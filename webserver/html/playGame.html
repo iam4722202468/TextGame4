@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <%- include ./headings/header.ejs %>
+        <title>RPG</title>
+        <link rel="stylesheet" href="/stylesheets/game.css"> <!-- CSS Created by boxmein -->
+    </head>
+    
+    <script src="https://cdn.socket.io/socket.io-1.0.0.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    
+    <body>
+        <%- include ./headings/navbar.ejs %>
+        <div class="container gameText">
+            <div id="log"></div>
+            <div class="textarea"><span id="lts">&lt;&lt;</span><input id="textbox" type="text" autofocus></div>
+        </div>
+    </body>
+    
+    <%- include ./headings/footer.ejs %>
+    
+    <script>
+        var socket = io();
+        
+        $('#textbox').bind("enterKey",function(e){
+            socket.emit('out', $("#textbox").val());
+            $("#log").append("<br><b>>&emsp;&emsp;" + $("#textbox").val() + "</b><br>");
+            $("#textbox").val("");
+        });
+        
+        $('#textbox').keyup(function(e){
+            if(e.keyCode == 13)
+            {
+                $(this).trigger("enterKey");
+            }
+        });
+        
+        socket.on('in', function(data) {
+            console.log(data);
+            $("#log").append(data);
+            $("html, body").stop();
+            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+            return false;
+        });
+    </script>
+</html>
