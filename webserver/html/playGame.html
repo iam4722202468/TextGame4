@@ -12,7 +12,10 @@
     <body>
         <%- include ./headings/navbar.ejs %>
         <div class="container gameText">
-            <div id="log"></div>
+            <div class="pre-scrollable mainGame">
+                <div id="log" class=""></div>
+                <div id="restart"></div>
+            </div>
             <div class="textarea"><span id="lts">&lt;&lt;</span><input id="textbox" type="text" autofocus></div>
         </div>
     </body>
@@ -21,6 +24,14 @@
     
     <script>
         var socket = io();
+        
+        function restartGame()
+        {
+            $('#log').html('');
+            $("#restart").html('');
+            socket.emit('restarto', document.cookie);
+            $('#textbox').focus();
+        }
         
         $('#textbox').bind("enterKey",function(e){
             socket.emit('out', $("#textbox").val(), document.cookie);
@@ -36,7 +47,7 @@
         });
         
         socket.on('restarti', function(data) {
-            socket.emit("restarto", document.cookie);
+            $("#restart").html('<br><br><button type="button" class="btn btn-default" onclick="restartGame()">Restart</button><br><br>');
         });
         
         socket.on('newID', function(data) {
@@ -44,9 +55,10 @@
         });
         
         socket.on('in', function(data) {
+            console.log(data);
             $("#log").append(data);
-            $("html, body").stop();
-            $("html, body").animate({ scrollTop: $(document).height() }, "slow");
+            $(".mainGame").stop();
+            $(".mainGame").animate({ scrollTop: $(".mainGame").height() }, "slow");
             return false;
         });
     </script>

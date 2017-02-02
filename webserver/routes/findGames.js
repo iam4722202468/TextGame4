@@ -36,16 +36,20 @@ router.get('/findgame', function(req, res) {
 router.get('/resume', function(req, res) {
     if("sessionID" in req.cookies) {
         getGames.getUser(req.cookies['sessionID'], function(data) {
-            findGames(function(games) {
-                ejs.renderFile(__dirname + baseFilePath + 'resumeGame.html', {active:"Resume", sessions:data, games:games}, function(err, result) {
-                    if (!err) {
-                        res.end(result);
-                    } else {
-                        res.end(err.toString());
-                        console.log(err);
-                    }
+            if(data.length > 0) {
+                findGames(function(games) {
+                    ejs.renderFile(__dirname + baseFilePath + 'resumeGame.html', {active:"Resume", sessions:data[0]['GameKeys'], games:games}, function(err, result) {
+                        if (!err) {
+                            res.end(result);
+                        } else {
+                            res.end(err.toString());
+                            console.log(err);
+                        }
+                    });
                 });
-            });
+            } else {
+                res.end('sessionID does not match any in the database. Clear your cookies.');
+            }
         });
     } else {
         getGames.createUser(res, function() {

@@ -1,12 +1,33 @@
 var getGames = require('./getGames');
 var findGames = require('./findGames');
 
+//make sure right user is playing right game
+function checkGame(cookieObject, callback_)
+{
+    getGames.getUser(cookieObject['sessionID'], function(data) {
+        if(data.length > 0)
+        {
+            findingGame = data[0]['GameKeys'].filter(function(v){ return v["key"] == cookieObject['currentGame'];});
+            
+            if(findingGame.length > 0)
+                callback_("ok")
+            else
+                callback_("Error: game not associated with user"); 
+        }
+        else
+            callback_("Error: sessionID not found");
+    });
+}
+
 module.exports = function(io, mainGameServer)
 {
     var sockets = {};
     
     //data sends faster than client connects
     var sendBuffer = {};
+    
+    //store past user text
+    var scrollback = {};
     
     function readBuffer() {
         for(x in sendBuffer)
@@ -17,7 +38,14 @@ module.exports = function(io, mainGameServer)
                 
                 if(x in sockets)
                 {
-                    sockets[x].emit('in', sendBuffer[x].join("<br>"));
+                    if(sendBuffer[x][sendBuffer[x].length-1] == "DEATH") {
+                        sockets[x]['Socket'].emit('in', sendBuffer[x].slice(0,sendBuffer[x].length-1).join("<br>"));
+                        delete scrollback[sockets[x]['Socket']['currentGame']]
+                        delete sockets[x]
+                    } else {
+                        sockets[x]['Socket'].emit('in', sendBuffer[x].join("<br>"));
+                    }
+                    
                     sendBuffer[x] = [];
                     //console.log(sendBuffer);
                 }
@@ -38,18 +66,26 @@ module.exports = function(io, mainGameServer)
             
             if(w[0] == "DEATH")
             {
-                sockets[gameKey].emit('restarti');
+                getGames.dropGame(sockets[gameKey]['sessionID'], gameKey);
+                sockets[gameKey]['Socket'].emit('restarti');
             }
             
             toReturn = w.slice(0,w.length-1).join(" ");
             
-            console.log(toReturn)
+            //console.log(toReturn)
             
             if(!(gameKey in sendBuffer))
                 sendBuffer[gameKey] = [];
             
             if(toReturn != [''])
+            {
                 sendBuffer[gameKey].push(toReturn.split("    ").join("&nbsp;&nbsp;&nbsp;&nbsp;"));
+                
+                if(!(gameKey in scrollback))
+                    scrollback[gameKey] = []
+                
+                scrollback[gameKey].push(toReturn);
+            }
         }
     });
     
@@ -67,7 +103,24 @@ module.exports = function(io, mainGameServer)
                     cookieObject[isSplit[0]] = isSplit[1]
             }
             
-            sockets[cookieObject['currentGame']] = socket;
+            checkGame(cookieObject, function(data) {
+                if(data == "ok")
+                {
+                    //returning user
+                    if(cookieObject['currentGame'] in scrollback)
+                    {
+                        if(scrollback[cookieObject['currentGame']].length > 0) {
+                            sendBuffer[cookieObject['currentGame']] = scrollback[cookieObject['currentGame']]
+                        }
+                    } else {
+                        scrollback[cookieObject['currentGame']] = [];
+                    }
+                } else {
+                    console.log(data);
+                }
+            });
+            
+            sockets[cookieObject['currentGame']] = {'Socket':socket, 'sessionID':cookieObject['sessionID'], 'currentGame':cookieObject['currentGame']};
         }
         
         console.log("Connected");
@@ -84,25 +137,24 @@ module.exports = function(io, mainGameServer)
             }
             
             getGames.getUser(cookieObject['sessionID'], function(data) {
-                if(data.length > 0)
-                {
-                    findingGame = data[0]['GameKeys'].filter(function(v){ return v["key"] == cookieObject['currentGame'];});
+                if(data.length > 0) {
+                    findGames.findGames(function(games) {
+                        
+                        gamePath = unescape(cookieObject['currentGamePath']);
                     
-                    if(findingGame.length > 0)
-                    {
-                        findGames.findGames(function(data2) {
-                            subFound = data2['Games'].filter(function(v){ return v["Path"] == findingGame[0]['path'];});
+                        subFound = games['Games'].filter(function(v){ return v["Path"] == gamePath;});
+                        
+                        if(subFound.length > 0) {
                             getGames.createGame(cookieObject['sessionID'], subFound[0], function(newKey) {
                                 socket.emit("newID", newKey);
-                                sockets[newKey] = socket;
+                                sockets[newKey] = {'Socket':socket, 'sessionID':cookieObject['sessionID'], 'currentGame':cookieObject['currentGame']};
                             });
-                        });
-                    }
-                    else
-                        console.log("Error: game not associated with user"); 
+                        }
+                    });
+                } else {
+                    console.log("Error: sessionID not found"); 
                 }
             });
-            
         });
         
         socket.on('out', function(msg, cookies){
@@ -121,23 +173,17 @@ module.exports = function(io, mainGameServer)
             console.log(cookieObject);
             //console.log(sockets);
             
-            //make sure right user is playing right game
-            getGames.getUser(cookieObject['sessionID'], function(data) {
-                if(data.length > 0)
+            checkGame(cookieObject, function(data) {
+                if(data == "ok")
                 {
-                    findingGame = data[0]['GameKeys'].filter(function(v){ return v["key"] == cookieObject['currentGame'];});
-                    
-                    if(findingGame.length > 0)
-                    {
-                        toSend = msg + " " + cookieObject['currentGame'] + "|\n";
-                        mainGameServer.stdin.write(toSend);
-                    }
-                    else
-                        console.log("Error: game not associated with user"); 
+                    toSend = msg + " " + cookieObject['currentGame'] + "|\n";
+                    mainGameServer.stdin.write(toSend);
+                } else {
+                    console.log(data);
                 }
-                else
-                    console.log("Error: sessionID not found");
             });
+            
+
             
         });
     });

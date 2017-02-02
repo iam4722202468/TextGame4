@@ -1,3 +1,9 @@
+.pre-scrollable {
+    max-height: none !important;
+    height: 70vh;
+    margin-top: 30px;
+}
+
 #game {
     font-family: "Courier New", Courier, monospace;
 }
@@ -13,14 +19,12 @@
 {
     color: #555;
     max-width: 960px;
-    margin-top: 50px;
 }
 
 #log:after
 {
     content: ' ';
     display: block;
-    height: 150px;
 }
 
 #log b
@@ -52,16 +56,21 @@
     margin-left: 5px;
     width: 95%;
 }
+
 .line
 {
     white-space: pre-line;
 }
 @media screen and (min-width: 910px)
 {
-    .textarea,#log
+    #log, #restart
+    {
+        margin-left: 100px !important;
+        margin-right: 192px !important;
+    }
+    .textarea
     {
         margin-left: 192px !important;
-        margin-right: 192px !important;
     }
 }
 @media screen and (max-width: 500px)

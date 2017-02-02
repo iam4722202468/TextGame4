@@ -82,10 +82,10 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
             if(*gameIndex >= 0 && chosenint <= 0)
             {
                 if(mainGameVector->at(*gameIndex)->game->getItems() == "")
-                    std::cout << "You currently have no items\n";
+                    std::cout << "You currently have no items " << gameName << std::endl;
                 else
-                    std::cout << "You have: " << mainGameVector->at(*gameIndex)->game->getItems() << std::endl;
-                std::cout << "Your health is currently " << mainGameVector->at(*gameIndex)->game->health << std::endl;
+                    std::cout << "You have: " << mainGameVector->at(*gameIndex)->game->getItems() << " " << gameName << std::endl;
+                std::cout << "Your health is currently " << mainGameVector->at(*gameIndex)->game->health << " " << gameName << std::endl;
             }
         }
         //Server command//
