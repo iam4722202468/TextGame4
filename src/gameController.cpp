@@ -374,6 +374,11 @@ bool GameController::addItem(std::string itemString)
     
     if(not foundPlace)
     {
+        if(std::stoi(amount) > 1)
+            std::cout << "You find " << amount << " " << itemName << "s " << sessionKey << std::endl;
+        else
+            std::cout << "You find " << amount << " " << itemName << " " << sessionKey << std::endl;
+        
         items.push_back(itemName);
         itemsAmount.push_back(std::stoi(amount));
     }
@@ -414,7 +419,7 @@ std::string GameController::getItems()
                 returnString += addAnd + std::to_string(itemsAmount.at(place)) + " " + items.at(place) + "s.";
             else
                 returnString += std::to_string(itemsAmount.at(place)) + " " + items.at(place) + "s, ";
-        } else if(itemsAmount.at(place) == 0) {
+        } else if(itemsAmount.at(place) == 1) {
             if(place == items.size()-1)
                 returnString += addAnd + std::to_string(itemsAmount.at(place)) + " " + items.at(place) + ".";
             else

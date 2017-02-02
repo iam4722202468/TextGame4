@@ -55,6 +55,8 @@ bool GameController::checkConditionGeneric(int (GameController::*getValueFunctio
         return true;
     else if(currentOperation == ">=" && (this->*getValueFunction)(name) >= stoi(value))
         return true;
+    else if(currentOperation == "<" && (this->*getValueFunction)(name) < stoi(value))
+        return true;
     return false;
 }
 

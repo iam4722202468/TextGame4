@@ -55,7 +55,7 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
         std::getline(std::cin,userInput);
         
         /////
-        //userInput += " moo|";
+        userInput += " moo|";
         /////
         
         // Input is from user
@@ -133,14 +133,14 @@ int main()
     std::string userInput;
     int gameIndex;
     
-    /*
+    
     mainGameVector.push_back(new GameContainer);
     mainGameVector.at(mainGameVector.size()-1)->game = new GameController("moo"); //moo
     mainGameVector.at(mainGameVector.size()-1)->sessionKey = "moo"; //moo
-    mainGameVector.at(mainGameVector.size()-1)->game->parseFile("irc.txt"); //game.txt
+    mainGameVector.at(mainGameVector.size()-1)->game->parseFile("developper.txt"); //game.txt
     mainGameVector.at(mainGameVector.size()-1)->game->storyline = ";1;"; //;setup;
     printOptions(mainGameVector.size()-1, &mainGameVector);
-    */
+    
     
     while(true)
     {

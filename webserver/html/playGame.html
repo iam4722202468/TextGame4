@@ -58,7 +58,8 @@
             console.log(data);
             $("#log").append(data);
             $(".mainGame").stop();
-            $(".mainGame").animate({ scrollTop: $(".mainGame").height() }, "slow");
+            $(".mainGame").animate({ scrollTop: $('.mainGame').prop("scrollHeight")}, 1000);
+            
             return false;
         });
     </script>
