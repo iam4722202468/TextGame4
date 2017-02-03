@@ -43,7 +43,6 @@ bool GameController::sendInput(std::string input)
         if(place->storylineName == storyline)
         {
             returnString = place->getOption(input, chooseFrom);
-            
             if(returnString == "")
             {
                 storyline[storyline.size()-1] = '.';
@@ -52,6 +51,7 @@ bool GameController::sendInput(std::string input)
             }
             else if(returnString[0] != ';')
             {
+                std::cout << returnString << " " << sessionKey << std::endl;
                 return 0;
             }
             else
@@ -62,17 +62,39 @@ bool GameController::sendInput(std::string input)
         }
 }
 
-void GameController::getOptions(std::vector<std::string> &toReturn)
+bool GameController::getOptions(std::vector<std::string> &toReturn)
 {
+    std::string returnString;
+    
     for(auto place : storylines)
         if(place->storylineName == storyline)
         {
-            place->displayOptions(chooseFrom, toReturn);
-            doCommandBlock(place->commands);
+            returnString = doCommandBlock(place->commands);
+            
+            //returnString is from parsing only what is found in the storyline, not the options
+            if(returnString == "")
+            {
+                place->displayOptions(chooseFrom, toReturn);
+                return 1;
+            }
+            else if(returnString[0] != ';')
+            {
+                std::cout << returnString << " " << sessionKey << std::endl;
+                return 0;
+            }
+            else
+            {
+                storyline = returnString;
+                toReturn.clear();
+                
+                //if a new storyline is found, change storylines and then parse the options for it
+                return getOptions(toReturn);
+            }
+            
             break;
         }
     
-    return;
+    return 1;
 }
 
 std::string GameController::doCommandBlock(std::vector<Command*> &commands)
@@ -129,8 +151,6 @@ bool GameController::parseFile(std::string fileName) //return false on error
 
 std::string doRand(std::string line)
 {
-    srand(time(NULL));
-    
     std::vector<std::string> parts;
     stringsplit('|', line, parts);
 
@@ -169,6 +189,8 @@ std::string GameController::doHealth(std::string command)
         health += stoi(amount);
     else if(type == '-')
         health -= stoi(amount);
+    else if(type == '=')
+        health = stoi(amount);
     
     if(health <= 0)
         return message;
@@ -296,10 +318,7 @@ std::string GameController::doCommand(Command* command)
         if(command->commandType == "item")
             addItem(macroCommand);
         else if(command->commandType == "endgame")
-        {
-            std::cout << macroCommand << " " << sessionKey << std::endl;
-            return "|";
-        }
+            return macroCommand;
         else if(command->commandType == "goto")
             return macroCommand;
         else if(command->commandType == "rand")

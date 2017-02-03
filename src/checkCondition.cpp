@@ -18,6 +18,7 @@ std::string GameController::getVariableValue(std::string variable)
     for(int place = 0; place < variables.size(); place++)
         if(variables.at(place) == variable)
             return variablesValue.at(place);
+    return "NULL";
 }
 
 bool GameController::checkConditionGeneric(int (GameController::*getValueFunction)(std::string toSend), std::string itemString)
@@ -70,7 +71,7 @@ std::string parseConditionBoolean(std::string condition)
         if(condition[place] == '(')
             inBracket = place;
         else if(condition[place] == ')')
-        { 
+        {
             bracketCondition = condition.substr(inBracket+1, place-inBracket-1);
             condition.erase(inBracket, place-inBracket+1);
             condition.insert(inBracket, parseConditionBoolean(bracketCondition));
@@ -126,10 +127,21 @@ bool GameController::checkVariable(std::string variableString)
     std::string variableValue;
     bool found = false;
     
+    bool isNegate = false;
+    
     for(int place = 0; place < variableString.length(); place++)
     {
-        if(variableString[place] == '=')
+        if(place < variableString.length() && variableString[place] == '=' && variableString[place+1] == '=')
+        {
             found = true;
+            place++;
+        }
+        else if(place < variableString.length() && variableString[place] == '!' && variableString[place+1] == '=')
+        {
+            found = true;
+            isNegate = true;
+            place++;
+        }
         else if(found)
             variableValue += variableString[place];
         else
@@ -137,10 +149,11 @@ bool GameController::checkVariable(std::string variableString)
     }
     
     for(int place = 0; place < variables.size(); place++)
+    {
         if(variables.at(place) == variableName && variablesValue.at(place) == variableValue)
-            return true;
-    
-    return false;
+            return !isNegate;
+    }
+    return isNegate;
 }
 
 bool GameController::checkCondition(std::string condition)

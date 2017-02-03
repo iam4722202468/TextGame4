@@ -61,7 +61,7 @@ class GameController
     int addStoryline(std::string storylineName, std::string storylineData); //return index of new storyline
     
     bool sendInput(std::string input);
-    void getOptions(std::vector<std::string> &toReturn);
+    bool getOptions(std::vector<std::string> &toReturn);
     
     bool parseLine(std::string line, std::string currentCondition, std::vector<Command*> &commands); //line parsing here so it can be accessed by options and storylines
     void addCommand(std::string command, std::string condition, std::string commandType, std::vector<Command*> &commands);

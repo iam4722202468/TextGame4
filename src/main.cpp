@@ -4,6 +4,11 @@
 #include "gameController.h"
 #include "extras.h"
 
+//for random numbers
+#include <cstdlib>
+#include <time.h>
+#include <ctime>
+
 struct GameContainer
 {
     int optionNumber;
@@ -24,14 +29,19 @@ int findGamePlace(std::vector<GameContainer*> *mainGameVector, std::string gameN
 int printOptions(int gameIndex, std::vector<GameContainer*> *mainGameVector)
 {
     mainGameVector->at(gameIndex)->optionNumber = 0;
-    mainGameVector->at(gameIndex)->game->getOptions(mainGameVector->at(gameIndex)->optionVector);
-    
-    for(auto w : mainGameVector->at(gameIndex)->optionVector)
+    if(mainGameVector->at(gameIndex)->game->getOptions(mainGameVector->at(gameIndex)->optionVector))
     {
-        std::cout << w << " " << mainGameVector->at(gameIndex)->sessionKey << std::endl;
-        //std::cout << w << std::endl;
-        if(w.find("    ") == 0)
-            mainGameVector->at(gameIndex)->optionNumber++;
+        for(auto w : mainGameVector->at(gameIndex)->optionVector)
+        {
+            std::cout << w << " " << mainGameVector->at(gameIndex)->sessionKey << std::endl;
+            //std::cout << w << std::endl;
+            if(w.find("    ") == 0)
+                mainGameVector->at(gameIndex)->optionNumber++;
+        }
+    }
+    else
+    {
+        return -1;
     }
 }
 
@@ -55,7 +65,7 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
         std::getline(std::cin,userInput);
         
         /////
-        userInput += " moo|";
+        //userInput += " moo|";
         /////
         
         // Input is from user
@@ -128,19 +138,20 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
 
 int main()
 {
+    srand(time(NULL));
+    
     std::vector<GameContainer*> mainGameVector;
     
     std::string userInput;
     int gameIndex;
-    
-    
+    /*
     mainGameVector.push_back(new GameContainer);
     mainGameVector.at(mainGameVector.size()-1)->game = new GameController("moo"); //moo
     mainGameVector.at(mainGameVector.size()-1)->sessionKey = "moo"; //moo
     mainGameVector.at(mainGameVector.size()-1)->game->parseFile("developper.txt"); //game.txt
     mainGameVector.at(mainGameVector.size()-1)->game->storyline = ";1;"; //;setup;
     printOptions(mainGameVector.size()-1, &mainGameVector);
-    
+    */
     
     while(true)
     {
@@ -148,15 +159,14 @@ int main()
         
         userInput = getUserInput(&mainGameVector, &gameIndex);
         
-        if(!mainGameVector.at(gameIndex)->game->sendInput(userInput))
+        //sendInput returns false if game ends from inside an option. if printOptions returns -1, game end was found when parsing storyline
+        if(!mainGameVector.at(gameIndex)->game->sendInput(userInput) || printOptions(gameIndex, &mainGameVector) == -1)
         {
             std::cout << "DEATH " << mainGameVector.at(gameIndex)->sessionKey << std::endl;
             delete mainGameVector.at(gameIndex)->game;
             delete mainGameVector.at(gameIndex);
             mainGameVector.erase(mainGameVector.begin() + gameIndex);
         }
-        else
-            printOptions(gameIndex, &mainGameVector);
     }
     
     return 0;
