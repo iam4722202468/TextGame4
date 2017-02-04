@@ -1,5 +1,6 @@
 ;setup;
     info: fork in the road
+    info: this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping this is a fairly long line to test line wrapping 
     var: moo = muu
     info: the current storyline is $storyline and your health is $health
     info: moo is $int($calc(1+1+1+0.5+int(10.7)))

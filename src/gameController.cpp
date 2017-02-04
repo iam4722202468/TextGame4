@@ -194,16 +194,19 @@ std::string GameController::doHealth(std::string command)
     {
         health += stoi(amount);
         std::cout << "+" << stoi(amount) << " health. (" << health << " now) " << sessionKey << std::endl;
+        std::cout << " " << sessionKey << std::endl;
     }
     else if(type == '-')
     {
         health -= stoi(amount);
         std::cout << "-" << stoi(amount) << " health. (" << health << " now) " << sessionKey << std::endl;
+        std::cout << " " << sessionKey << std::endl;
     }
     else if(type == '=')
     {
-        std::cout << "Health set to " << health << " " << sessionKey << std::endl;
         health = stoi(amount);
+        std::cout << "Health set to " << health << " " << sessionKey << std::endl;
+        std::cout << " " << sessionKey << std::endl;
     }
     
     if(health <= 0)
@@ -387,13 +390,16 @@ bool GameController::addItem(std::string itemString)
             {
                 case '+':
                 {
-                    std::cout << itemName << " + " << amount << " " << sessionKey << std::endl;
+                    itemsAmount.at(place) += intAmount;
+                    std::cout << itemName << " + " << amount << " (" << itemsAmount.at(place) << " now) " << sessionKey << std::endl;
+                    std::cout << " " << sessionKey << std::endl;
                 }
                 break;
                 case '-':
                 {
                     itemsAmount.at(place) -= intAmount;
-                    std::cout << itemName << " - " << amount << " " << sessionKey << std::endl;
+                    std::cout << itemName << " - " << amount << " (" << itemsAmount.at(place) << " now) " << sessionKey << std::endl;
+                    std::cout << " " << sessionKey << std::endl;
                 }
                 break;
                 case '/':
@@ -414,7 +420,8 @@ bool GameController::addItem(std::string itemString)
     
     if(not foundPlace)
     {
-        std::cout << itemName << " + " << amount << " " << sessionKey << std::endl;
+        std::cout << itemName << " + " << amount << " (" << amount << " now) " << sessionKey << std::endl;
+        std::cout << " " << sessionKey << std::endl;
         
         items.push_back(itemName);
         itemsAmount.push_back(intAmount);

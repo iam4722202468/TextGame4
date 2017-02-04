@@ -116,6 +116,7 @@ std::string parseConditionBoolean(std::string condition)
                 condition.insert(place-1, "0");
         }
     }
+    
     return condition;
 }
 
@@ -148,17 +149,17 @@ bool GameController::checkVariable(std::string variableString)
             variableName += variableString[place];
     }
     
-    for(int place = 0; place < variables.size(); place++)
-    {
-        if(variables.at(place) == variableName && variablesValue.at(place) == variableValue)
-            return !isNegate;
-    }
+    if(getVariableValue(variableName) == variableValue)
+        return !isNegate;
+    
     return isNegate;
 }
 
 bool GameController::checkCondition(std::string condition)
 {
     condition = removeWhiteSpace(condition, '\n');
+    condition = doMacros(condition);
+    
     std::string checkFor[] = {"item", "life", "gameclock", "var"};
     
     bool reply;
@@ -198,7 +199,7 @@ bool GameController::checkCondition(std::string condition)
                     else
                         condition.insert(place, "0");
                 }
-                
+        
         return parseConditionBoolean(condition)[0]-48;
     }
 }

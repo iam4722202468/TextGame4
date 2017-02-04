@@ -152,8 +152,8 @@ int main()
     mainGameVector.push_back(new GameContainer);
     mainGameVector.at(mainGameVector.size()-1)->game = new GameController("moo"); //moo
     mainGameVector.at(mainGameVector.size()-1)->sessionKey = "moo"; //moo
-    mainGameVector.at(mainGameVector.size()-1)->game->parseFile("game.txt"); //game.txt
-    mainGameVector.at(mainGameVector.size()-1)->game->storyline = ";setup;"; //;setup;
+    mainGameVector.at(mainGameVector.size()-1)->game->parseFile("rpg.txt"); //game.txt
+    mainGameVector.at(mainGameVector.size()-1)->game->storyline = ";1;"; //;setup;
     printOptions(mainGameVector.size()-1, &mainGameVector);
     */
     
