@@ -17,7 +17,6 @@ class Storyline
     int getresponse(int options);
     
     std::string data;
-    std::string text;
     
     public:
     

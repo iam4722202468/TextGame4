@@ -28,28 +28,39 @@ router.get('/*', function(req, res) {
         if(newData.length > 0)
         {
             if("sessionID" in req.cookies) {
-                if("currentGame" in req.cookies && req.cookies['currentGamePath'] == req.url) {
-                    renderPage(function(data) {
-                        res.end(data);
-                    });
-                    //res.end(JSON.stringify(newData[0]) + req.cookies['sessionID']);
-                } else {
-                    getGames.createGame(req.cookies['sessionID'], newData[0], function(newKey) {
-                        res.cookie('currentGame', newKey, {expires: new Date(2147483647000)});
-                        res.cookie('currentGamePath', req.url, {expires: new Date(2147483647000)});
+                getGames.getUser(req.cookies['sessionID'], function(data) {
+                    if(data.length > 0) {
+                        if("currentGame" in req.cookies && req.cookies['currentGamePath'] == req.url) {
+                            renderPage(function(data) {
+                                res.end(data);
+                            });
+                            //res.end(JSON.stringify(newData[0]) + req.cookies['sessionID']);
+                        } else {
+                            getGames.createGame(req.cookies['sessionID'], newData[0], function(newKey) {
+                                res.cookie('currentGame', newKey, {expires: new Date(2147483647000)});
+                                res.cookie('currentGamePath', req.url, {expires: new Date(2147483647000)});
+                                
+                                renderPage(function(data) {
+                                    res.end(data);
+                                });
+                                //res.end(JSON.stringify(newData[0]) + req.cookies['sessionID'] + " " + newKey);
+                            });
+                        }
+                    } else {
+                        res.cookie('sessionID', '', { expires: new Date(1), path: '/' })
+                        res.cookie('currentGame', '', { expires: new Date(1), path: '/' })
+                        res.cookie('currentGamePath', '', { expires: new Date(1), path: '/' })
                         
-                        renderPage(function(data) {
-                            res.end(data);
-                        });
-                        //res.end(JSON.stringify(newData[0]) + req.cookies['sessionID'] + " " + newKey);
-                    });
-                }
+                        res.redirect(req.originalUrl);
+                    }
+                });
             } else {
                 getGames.createUser(res, function(returnedKey) {
                     getGames.createGame(returnedKey, newData[0], function(newKey) {
                         res.cookie('currentGame', newKey, {expires: new Date(2147483647000)});
                         res.cookie('currentGamePath', req.url, {expires: new Date(2147483647000)})
-                        res.end("Cookie set");
+                        
+                        res.redirect(req.originalUrl);
                     });
                 });
             }

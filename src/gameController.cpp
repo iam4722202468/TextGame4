@@ -75,11 +75,16 @@ bool GameController::getOptions(std::vector<std::string> &toReturn)
             if(returnString == "")
             {
                 place->displayOptions(chooseFrom, toReturn);
+                
+                //do macros
+                for(int i = 0; i < toReturn.size(); ++i)
+                    toReturn.at(i) = doMacros(toReturn.at(i));
+                
                 return 1;
             }
             else if(returnString[0] != ';')
             {
-                std::cout << returnString << " " << sessionKey << std::endl;
+                std::cout << doMacros(returnString) << " " << sessionKey << std::endl;
                 return 0;
             }
             else
@@ -116,7 +121,7 @@ bool GameController::parseFile(std::string fileName) //return false on error
     
     int lineNumber = 0;
     std::string line;
-    std::ifstream myfile(fileName);
+    std::ifstream myfile("./games/" + fileName);
     
     bool inScenario = false;
     
@@ -186,11 +191,20 @@ std::string GameController::doHealth(std::string command)
     }
     
     if(type == '+')
+    {
         health += stoi(amount);
+        std::cout << "+" << stoi(amount) << " health. (" << health << " now) " << sessionKey << std::endl;
+    }
     else if(type == '-')
+    {
         health -= stoi(amount);
+        std::cout << "-" << stoi(amount) << " health. (" << health << " now) " << sessionKey << std::endl;
+    }
     else if(type == '=')
+    {
+        std::cout << "Health set to " << health << " " << sessionKey << std::endl;
         health = stoi(amount);
+    }
     
     if(health <= 0)
         return message;
@@ -363,6 +377,8 @@ bool GameController::addItem(std::string itemString)
             amount += itemString[place];
     }
     
+    int intAmount = std::stoi(amount);
+    
     for(int place = 0; place < items.size(); place++)
     {
         if(itemName == items.at(place))
@@ -370,19 +386,24 @@ bool GameController::addItem(std::string itemString)
             switch(operation)
             {
                 case '+':
-                    itemsAmount.at(place) += std::stoi(amount);
+                {
+                    std::cout << itemName << " + " << amount << " " << sessionKey << std::endl;
+                }
                 break;
                 case '-':
-                    itemsAmount.at(place) -= std::stoi(amount);
+                {
+                    itemsAmount.at(place) -= intAmount;
+                    std::cout << itemName << " - " << amount << " " << sessionKey << std::endl;
+                }
                 break;
                 case '/':
-                    itemsAmount.at(place) /= std::stoi(amount);
+                    itemsAmount.at(place) /= intAmount;
                 break;
                 case '*':
-                    itemsAmount.at(place) *= std::stoi(amount);
+                    itemsAmount.at(place) *= intAmount;
                 break;
                 case '=':
-                    itemsAmount.at(place) = std::stoi(amount);
+                    itemsAmount.at(place) = intAmount;
                 break;
             }
             
@@ -393,13 +414,10 @@ bool GameController::addItem(std::string itemString)
     
     if(not foundPlace)
     {
-        if(std::stoi(amount) > 1)
-            std::cout << "You find " << amount << " " << itemName << "s " << sessionKey << std::endl;
-        else
-            std::cout << "You find " << amount << " " << itemName << " " << sessionKey << std::endl;
+        std::cout << itemName << " + " << amount << " " << sessionKey << std::endl;
         
         items.push_back(itemName);
-        itemsAmount.push_back(std::stoi(amount));
+        itemsAmount.push_back(intAmount);
     }
     
     return true;

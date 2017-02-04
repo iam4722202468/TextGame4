@@ -1,5 +1,5 @@
 ;1;
-    text: It's 8am. Your alarm starts going off.
+    info: It's 8am. Your alarm starts going off.
     option: Get up
         var: early = true
         info: You get out of bed
@@ -9,14 +9,14 @@
 end
 
 ;checkSchedule;
-    text: <schedule>
+    info: <schedule>
     option: back
         goto: $var(back)
     endoption
 end
 
 ;1.1;
-    text: .
+    info: .
     option: Look around
         info: You're in your dorm
         goto: ;1.1;
@@ -41,7 +41,7 @@ end
 end
 
 ;gym.early;
-    text: You get to the gym. It's pretty early, and not many people are here yet
+    info: You get to the gym. It's pretty early, and not many people are here yet
     option: Go back to dorm
         var: early = false
         goto: ;1.1;
@@ -49,7 +49,7 @@ end
 end
 
 ;gym.late;
-    text: You get to the gym. It's later in the day, and the gym is completely full
+    info: You get to the gym. It's later in the day, and the gym is completely full
     option: Go to free weights
     option: Wait for a machine
     option: 

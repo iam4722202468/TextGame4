@@ -88,7 +88,7 @@ function dropDatabase()
         }
     });
 }
-    
+
 module.exports = function(mainGameServer)
 {
     function createGame(key, gameInfo, callback_)

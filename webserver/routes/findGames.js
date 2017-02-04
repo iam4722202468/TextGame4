@@ -28,7 +28,20 @@ router.get('/findgame', function(req, res) {
         });
     } else {
         getGames.createUser(res, function() {
-            res.end("Cookie set");
+            
+            //same as above
+            
+            findGames(function(games) {
+                ejs.renderFile(__dirname + baseFilePath + 'findGame.html', {active:"Find", games:games}, function(err, result) {
+                    if (!err) {
+                        res.end(result);
+                    } else {
+                        res.end(err.toString());
+                        console.log(err);
+                    }
+                });
+            });
+            
         });
     }
 });
@@ -48,35 +61,26 @@ router.get('/resume', function(req, res) {
                     });
                 });
             } else {
-                res.end('sessionID does not match any in the database. Clear your cookies.');
+                res.cookie('sessionID', '', { expires: new Date(1), path: '/' })
+                res.cookie('currentGame', '', { expires: new Date(1), path: '/' })
+                res.cookie('currentGamePath', '', { expires: new Date(1), path: '/' })
+                
+                res.redirect(req.originalUrl);
             }
         });
     } else {
         getGames.createUser(res, function() {
-            res.end("Cookie set");
+            ejs.renderFile(__dirname + baseFilePath + 'resumeGame.html', {active:"Resume", sessions:{}, games:{}}, function(err, result) {
+                if (!err) {
+                    res.end(result);
+                } else {
+                    res.end(err.toString());
+                    console.log(err);
+                }
+            });
         });
     }
 });
 
 module.exports = router;
 module.exports.findGames = findGames;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

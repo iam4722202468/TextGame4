@@ -39,9 +39,7 @@ Storyline::Storyline(std::string data_, std::string storylineName_, GameControll
     {
         clearedText = removeWhiteSpace(lineText);
         
-        if(clearedText.substr(0,5) == "text:")
-            text = clearedText.erase(0,6);
-        else if(clearedText.substr(0,7) == "option:")
+        if(clearedText.substr(0,7) == "option:")
         {
             if(inOption)
                 options.push_back(new Option(optionString, options.size(), optionTitle, currentCondition, currentGame));
@@ -72,8 +70,6 @@ void Storyline::displayOptions(std::vector<Option*> &chooseFrom, std::vector<std
 {
     chooseFrom.clear();
     returnOptions.clear();
-    
-    returnOptions.push_back(text);
     
     for(int counter = 0; counter < options.size(); counter++)
     {

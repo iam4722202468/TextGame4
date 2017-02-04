@@ -72,19 +72,17 @@ module.exports = function(io, mainGameServer)
             
             toReturn = w.slice(0,w.length-1).join(" ");
             
-            //console.log(toReturn)
-            
             if(!(gameKey in sendBuffer))
                 sendBuffer[gameKey] = [];
             
             if(toReturn != [''])
             {
-                sendBuffer[gameKey].push(toReturn.split("    ").join("&nbsp;&nbsp;&nbsp;&nbsp;"));
+                sendBuffer[gameKey].push(toReturn.split(" ").join("&nbsp;"));
                 
                 if(!(gameKey in scrollback))
                     scrollback[gameKey] = []
                 
-                scrollback[gameKey].push(toReturn);
+                scrollback[gameKey].push(toReturn.split(" ").join("&nbsp;"));
             }
         }
     });
@@ -152,7 +150,7 @@ module.exports = function(io, mainGameServer)
                         }
                     });
                 } else {
-                    console.log("Error: sessionID not found"); 
+                    console.log("Error: sessionID not found");
                 }
             });
         });
@@ -178,6 +176,9 @@ module.exports = function(io, mainGameServer)
                 {
                     toSend = msg + " " + cookieObject['currentGame'] + "|\n";
                     mainGameServer.stdin.write(toSend);
+                    
+                    scrollback[cookieObject['currentGame']].push("<b>>&nbsp;&nbsp;" + msg + "</b>");
+                    
                 } else {
                     console.log(data);
                 }

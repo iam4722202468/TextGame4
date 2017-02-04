@@ -29,6 +29,7 @@ int findGamePlace(std::vector<GameContainer*> *mainGameVector, std::string gameN
 int printOptions(int gameIndex, std::vector<GameContainer*> *mainGameVector)
 {
     mainGameVector->at(gameIndex)->optionNumber = 0;
+    
     if(mainGameVector->at(gameIndex)->game->getOptions(mainGameVector->at(gameIndex)->optionVector))
     {
         for(auto w : mainGameVector->at(gameIndex)->optionVector)
@@ -87,6 +88,7 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
                 chosenint = -1;
             }
             
+            std::cout << "  " << gameName << std::endl;
             std::cin.clear();
             
             if(*gameIndex >= 0 && chosenint <= 0)
@@ -96,6 +98,7 @@ std::string getUserInput(std::vector<GameContainer*> *mainGameVector, int *gameI
                 else
                     std::cout << "You have: " << mainGameVector->at(*gameIndex)->game->getItems() << " " << gameName << std::endl;
                 std::cout << "Your health is currently " << mainGameVector->at(*gameIndex)->game->health << " " << gameName << std::endl;
+                std::cout << "  " << gameName << std::endl;
             }
         }
         //Server command//
@@ -144,12 +147,13 @@ int main()
     
     std::string userInput;
     int gameIndex;
+    
     /*
     mainGameVector.push_back(new GameContainer);
     mainGameVector.at(mainGameVector.size()-1)->game = new GameController("moo"); //moo
     mainGameVector.at(mainGameVector.size()-1)->sessionKey = "moo"; //moo
-    mainGameVector.at(mainGameVector.size()-1)->game->parseFile("developper.txt"); //game.txt
-    mainGameVector.at(mainGameVector.size()-1)->game->storyline = ";1;"; //;setup;
+    mainGameVector.at(mainGameVector.size()-1)->game->parseFile("game.txt"); //game.txt
+    mainGameVector.at(mainGameVector.size()-1)->game->storyline = ";setup;"; //;setup;
     printOptions(mainGameVector.size()-1, &mainGameVector);
     */
     
