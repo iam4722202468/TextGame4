@@ -15,8 +15,14 @@
                 {
                     document.cookie = "currentGame=" + key + "; expires=Thu, 18 Dec 2038 12:00:00 UTC; path=/";
                     document.cookie = "currentGamePath=" + path + "; expires=Thu, 18 Dec 2038 12:00:00 UTC; path=/";
-                    console.log('/playGame' + path);
                     window.location = '/playGame' + path;
+                }
+                function deleteGame(gameID, card)
+                {
+                    $(card).parent().parent().parent().css('visibility','hidden');
+                    $.post("/deleteGame", {gameID: gameID});
+                    document.cookie = "currentGame=; expires=Thu, 18 Dec 2038 12:00:00 UTC; path=/";
+                    document.cookie = "currentGamePath=; expires=Thu, 18 Dec 2038 12:00:00 UTC; path=/";
                 }
             </script>
             
@@ -31,7 +37,8 @@
                                 <div class="card-block">
                                     <h4 class="card-title"><%= foundGame[0]['Name'] %></h4>
                                     <p class="card-text"><%= foundGame[0]['Description'] %></p>
-                                    <a onclick="getGame('<%= sessions[x]['path'] %>' , '<%= sessions[x]['key'] %> ');" class="btn btn-primary">Resume</a>
+                                    <a onclick="getGame('<%= sessions[x]['path'] %>' , '<%= sessions[x]['key'] %>');" class="btn btn-primary">Resume</a>
+                                    <a onclick="deleteGame('<%= sessions[x]['key'] %>', this);" class="btn btn-danger">Delete</a>
                                 </div>
                             </div>
                         </div>

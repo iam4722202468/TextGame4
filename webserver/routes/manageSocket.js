@@ -40,7 +40,7 @@ module.exports = function(io, mainGameServer)
                 {
                     if(sendBuffer[x][sendBuffer[x].length-1] == "DEATH") {
                         sockets[x]['Socket'].emit('in', sendBuffer[x].slice(0,sendBuffer[x].length-1).join("<br>"));
-                        delete scrollback[sockets[x]['Socket']['currentGame']]
+                        delete scrollback[x]
                         delete sockets[x]
                     } else {
                         sockets[x]['Socket'].emit('in', sendBuffer[x].join("<br>"));
@@ -59,6 +59,8 @@ module.exports = function(io, mainGameServer)
         data = data.toString();
         datum = data.split('\n');
         
+        //on death
+        
         for(x in datum)
         {
             w = datum[x].split(' ');
@@ -67,7 +69,6 @@ module.exports = function(io, mainGameServer)
             if(w[0] == "DEATH")
             {
                 getGames.dropGame(sockets[gameKey]['sessionID'], gameKey);
-                sockets[gameKey]['Socket'].emit('restarti');
             }
             
             toReturn = w.slice(0,w.length-1).join(" ");
@@ -118,12 +119,12 @@ module.exports = function(io, mainGameServer)
                 }
             });
             
-            sockets[cookieObject['currentGame']] = {'Socket':socket, 'sessionID':cookieObject['sessionID'], 'currentGame':cookieObject['currentGame']};
+            sockets[cookieObject['currentGame']] = {'Socket':socket, 'sessionID':cookieObject['sessionID']};
         }
         
         console.log("Connected");
         
-        socket.on('restarto', function(cookies) {
+        socket.on('restart', function(cookies) {
             console.log(cookies);
             sections = cookies.split('; ');
             cookieObject = {}
@@ -145,7 +146,20 @@ module.exports = function(io, mainGameServer)
                         if(subFound.length > 0) {
                             getGames.createGame(cookieObject['sessionID'], subFound[0], function(newKey) {
                                 socket.emit("newID", newKey);
-                                sockets[newKey] = {'Socket':socket, 'sessionID':cookieObject['sessionID'], 'currentGame':cookieObject['currentGame']};
+                                
+                                //on restart
+                                
+                                if (cookieObject['currentGame'] in scrollback)
+                                {
+                                    delete scrollback[cookieObject['currentGame']];
+                                    delete sockets[cookieObject['currentGame']];
+                                    getGames.dropGame(cookieObject['sessionID'], cookieObject['currentGame']);
+                                }
+                                
+                                mainGameServer.stdin.write("DELETE " + cookieObject['currentGame'] + '\n');
+                                scrollback[cookieObject['currentGame']] = [];
+                                
+                                sockets[newKey] = {'Socket':socket, 'sessionID':cookieObject['sessionID']};
                             });
                         }
                     });
@@ -175,6 +189,7 @@ module.exports = function(io, mainGameServer)
                 if(data == "ok")
                 {
                     toSend = msg + " " + cookieObject['currentGame'] + "|\n";
+                    console.log(toSend);
                     mainGameServer.stdin.write(toSend);
                     
                     scrollback[cookieObject['currentGame']].push("<b>>&nbsp;&nbsp;" + msg + "</b>");

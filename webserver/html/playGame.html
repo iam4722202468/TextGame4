@@ -14,9 +14,8 @@
         <div class="container gameText">
             <div class="pre-scrollable mainGame">
                 <div id="log" class=""></div>
-                <div id="restart"></div>
             </div>
-            <div class="textarea"><span id="lts">&lt;&lt;</span><input id="textbox" type="text" autofocus></div>
+            <div class="textarea"><div class="input-group-btn"><span id="lts">&lt;&lt;</span><input id="textbox" type="text" autofocus/><button onclick="restartGame()" class="btn btn-warning reload">Restart</button></div></div>
         </div>
     </body>
     
@@ -28,8 +27,7 @@
         function restartGame()
         {
             $('#log').html('');
-            $("#restart").html('');
-            socket.emit('restarto', document.cookie);
+            socket.emit('restart', document.cookie);
             $('#textbox').focus();
         }
         
@@ -46,16 +44,11 @@
             }
         });
         
-        socket.on('restarti', function(data) {
-            $("#restart").html('<br><br><button type="button" class="btn btn-default" onclick="restartGame()">Restart</button><br><br>');
-        });
-        
         socket.on('newID', function(data) {
             document.cookie = "currentGame=" + data + "; expires=Thu, 18 Dec 2038 12:00:00 UTC; path=/";
         });
         
         socket.on('in', function(data) {
-            console.log(data);
             $("#log").append(data);
             $(".mainGame").stop();
             $(".mainGame").animate({ scrollTop: $('.mainGame').prop("scrollHeight")}, 1000);

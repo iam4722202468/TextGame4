@@ -105,7 +105,14 @@ bool GameController::getOptions(std::vector<std::string> &toReturn)
 std::string GameController::doCommandBlock(std::vector<Command*> &commands)
 {
     std::string returnString = "";
-    for(auto place : commands)
+    
+    std::vector<Command*> checkedCommands;
+    
+    for(auto command : commands)
+        if(checkCondition(command->condition))
+            checkedCommands.push_back(command);
+        
+    for(auto place : checkedCommands)
     {
         returnString = doCommand(place);
         if(returnString != "")
@@ -194,19 +201,19 @@ std::string GameController::doHealth(std::string command)
     {
         health += stoi(amount);
         std::cout << "+" << stoi(amount) << " health. (" << health << " now) " << sessionKey << std::endl;
-        std::cout << " " << sessionKey << std::endl;
+        std::cout << "  " << sessionKey << std::endl;
     }
     else if(type == '-')
     {
         health -= stoi(amount);
         std::cout << "-" << stoi(amount) << " health. (" << health << " now) " << sessionKey << std::endl;
-        std::cout << " " << sessionKey << std::endl;
+        std::cout << "  " << sessionKey << std::endl;
     }
     else if(type == '=')
     {
         health = stoi(amount);
         std::cout << "Health set to " << health << " " << sessionKey << std::endl;
-        std::cout << " " << sessionKey << std::endl;
+        std::cout << "  " << sessionKey << std::endl;
     }
     
     if(health <= 0)
@@ -326,30 +333,28 @@ std::string GameController::doMacros(std::string macroString)
 
 std::string GameController::doCommand(Command* command)
 {
+    
     std::string macroCommand;
     
-    if(checkCondition(command->condition))
-    {
-        macroCommand = doMacros(command->command);
+    macroCommand = doMacros(command->command);
         
-        if(command->commandType == "item")
-            addItem(macroCommand);
-        else if(command->commandType == "endgame")
-            return macroCommand;
-        else if(command->commandType == "goto")
-            return macroCommand;
-        else if(command->commandType == "rand")
-            return doRand(macroCommand);
-        else if(command->commandType == "health")
-            return doHealth(macroCommand);
-        else if(command->commandType == "include")
-            parseFile(macroCommand);
-        else if(command->commandType == "info")
-            std::cout << macroCommand << " " << sessionKey << std::endl;
-        else if(command->commandType == "var")
-            addVariable(macroCommand);
-    }
-    
+    if(command->commandType == "item")
+        addItem(macroCommand);
+    else if(command->commandType == "endgame")
+        return macroCommand;
+    else if(command->commandType == "goto")
+        return macroCommand;
+    else if(command->commandType == "rand")
+        return doRand(macroCommand);
+    else if(command->commandType == "health")
+        return doHealth(macroCommand);
+    else if(command->commandType == "include")
+        parseFile(macroCommand);
+    else if(command->commandType == "info")
+        std::cout << macroCommand << " " << sessionKey << std::endl;
+    else if(command->commandType == "var")
+        addVariable(macroCommand);
+
     return "";
 }
 
@@ -392,14 +397,14 @@ bool GameController::addItem(std::string itemString)
                 {
                     itemsAmount.at(place) += intAmount;
                     std::cout << itemName << " + " << amount << " (" << itemsAmount.at(place) << " now) " << sessionKey << std::endl;
-                    std::cout << " " << sessionKey << std::endl;
+                    std::cout << "  " << sessionKey << std::endl;
                 }
                 break;
                 case '-':
                 {
                     itemsAmount.at(place) -= intAmount;
                     std::cout << itemName << " - " << amount << " (" << itemsAmount.at(place) << " now) " << sessionKey << std::endl;
-                    std::cout << " " << sessionKey << std::endl;
+                    std::cout << "  " << sessionKey << std::endl;
                 }
                 break;
                 case '/':
@@ -421,7 +426,7 @@ bool GameController::addItem(std::string itemString)
     if(not foundPlace)
     {
         std::cout << itemName << " + " << amount << " (" << amount << " now) " << sessionKey << std::endl;
-        std::cout << " " << sessionKey << std::endl;
+        std::cout << "  " << sessionKey << std::endl;
         
         items.push_back(itemName);
         itemsAmount.push_back(intAmount);

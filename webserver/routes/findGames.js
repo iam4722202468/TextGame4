@@ -14,6 +14,10 @@ function findGames(callback_)
     });
 }
 
+router.post('/deleteGame', function(req, res) {
+    getGames.dropGame(req.cookies['sessionID'], req.body.gameID);
+});
+
 router.get('/findgame', function(req, res) {
     if("sessionID" in req.cookies) {
         findGames(function(games) {
@@ -28,20 +32,7 @@ router.get('/findgame', function(req, res) {
         });
     } else {
         getGames.createUser(res, function() {
-            
-            //same as above
-            
-            findGames(function(games) {
-                ejs.renderFile(__dirname + baseFilePath + 'findGame.html', {active:"Find", games:games}, function(err, result) {
-                    if (!err) {
-                        res.end(result);
-                    } else {
-                        res.end(err.toString());
-                        console.log(err);
-                    }
-                });
-            });
-            
+            res.redirect(req.originalUrl);
         });
     }
 });

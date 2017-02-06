@@ -44,22 +44,6 @@ function createUser(res, callback_)
     });
 }
 
-function dropGame(userID, gameID)
-{
-    MongoClient.connect(url, function (err, db) {
-        if (err) {
-            console.log('Unable to connect to the mongoDB server. Error:', err);
-            callback_('error');
-        } else {
-            var collection = db.collection("Users");
-            collection.update({'UserID': userID},{$pull: { 'GameKeys': {key:gameID} }}, function(err) {
-                //console.log("NEW " + gameKey + " " + gameInfo['File'] + " " + gameInfo['Start'] +'\n');
-                db.close();
-            });
-        }
-    });
-}
-
 function getUser(key, callback_)
 {
     MongoClient.connect(url, function (err, db) {
@@ -110,10 +94,31 @@ module.exports = function(mainGameServer)
             }
         });
     }
+    
+    function dropGame(userID, gameID)
+    {
+        //Does not delete scrollback for game and socket**
+        //Need to do that
+        //(Later)
+        
+        MongoClient.connect(url, function (err, db) {
+            if (err) {
+                console.log('Unable to connect to the mongoDB server. Error:', err);
+                callback_('error');
+            } else {
+                var collection = db.collection("Users");
+                collection.update({'UserID': userID},{$pull: { 'GameKeys': {key:gameID} }}, function(err) {
+                    mainGameServer.stdin.write("DELETE " + gameID + '\n');
+                    db.close();
+                });
+            }
+        });
+    }
+    
     module.exports.createGame = createGame;
+    module.exports.dropGame = dropGame;
 }
 
-module.exports.dropGame = dropGame;
 module.exports.dropDatabase = dropDatabase;
 module.exports.createUser = createUser;
 module.exports.getUser = getUser;
