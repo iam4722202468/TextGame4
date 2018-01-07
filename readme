@@ -1,0 +1,158 @@
+/////////////////////
+//iam's game readme//
+/////////////////////
+
+________________________________________
+Part 1. Introduction
+________________________________________
+
+This is a program that simplifies making text based games
+
+Each place, or 'storyline' has a name. These names are text surrounded by semicolons ex. ;1;.
+The storyline tells the game where to go, and which parts of the game to read when.
+
+To declare a storyline, just put the storyline name on a line in the game.txt file, and make sure to end it with 'end'
+
+ex. 
+~~~~~~~~~~
+;1;
+    info: You are at storyline ;1;
+end
+~~~~~~~~~~
+
+The info declaration is the text that is read out to the player.
+In-game, this would look like:
+
+~~~~~~~~~~
+You are at storyline ;1;
+~~~~~~~~~~
+________________________________________
+Part 2. Options                    
+________________________________________
+
+One of the things that you can add to storylines is options. 
+
+Options are declared by option: (text), and give users a choice of what storyline to go to next.
+If an option line if found, The game will prompt users for an option number to go to.
+Option numbers are decided by the order that the options are found in; if there are 2 options, the first option is option 1 and the second is option 2
+
+If not otherwise specified, when an option is chosen, the option number is added to the current story.
+ex. if the storyline is ;1; and option 1 is chosen, the storyline becomes ;1.1;
+
+ex.
+~~~~~~~~~~
+;1;
+	info: You are at storyline ;1;
+		option: go to storyline ;1.1;
+end
+
+;1.1;
+	info: You are at storyline ;1;
+end
+~~~~~~~~~~
+________________________________________
+Part 3. Conditionals            
+________________________________________
+
+Conditional statements can be placed in the base of a storyline, and code is only evaluated if their condition is satisfied. Conditionals must end with an endif
+Macros (part 5) are evaluated before conditions.
+
+Note: Options are ended if a conditional is found
+
+Logic:
+    and: &
+    or: |
+    equals: ==
+    not: !
+
+Comparing:
+    "<=", ">=", "==", "!=", "<", ">"
+
+List of conditions that can be checked with explanations, syntax and examples:
+
+item        :: Compare to item name
+life        :: Compare to player life amount
+gameclock   :: Compare to game timer (each time a player enters an option the game clock is increased by 1)
+var         :: Compare to a variable value
+
+ex.
+~~~~~~~~~~
+if: (var(potatoquestion == true) & !var(crackerquest == NULL))
+    option: Tell cracker64 you have the potatoes for him.
+        goto: ;cracker.givepotato;
+endif
+~~~~~~~~~~
+
+Conditions are evaluated recursively, allowing nested conditions.
+
+________________________________________
+Part 4. Actions                    
+________________________________________
+
+Actions are placed within a storyline. They can be placed after an option line to only be ran when that option is chosen, or they can be placed alone in a storyline to be ran when the storyline is read.
+
+List of actions with explanation, syntax and examples:
+
+endgame		:: This ends the game with a message to the user 
+			:: endgame: (message) 
+			:: endgame: You lost
+
+goto		:: This can be used to send the player to a certain storyline in the game 
+			:: goto: (storyline name) 
+			:: goto: ;1;
+
+item		:: This is used to give the player an item. Items modifiers are '+', '-', '/', '*', '='
+			:: item: potato+1
+			:: item: potato-1
+			:: item: potato=1
+
+rand		:: This randomly goes to one of the storylines provided. You can provide any number of storylines to chose from
+			:: rand: (storyline 1)|(storyline 2)|(storyline 3)|
+			:: rand: ;1;|;1.4;|;1.potato;|
+
+health  	:: Makes the player lose health. If the player dies, a message is shown
+			:: health: -20|In the morning your body is found lying next to the hotel.
+			:: health: +20|You gain 20 health
+			:: health: =100|You heal back to 100 health
+
+var			:: create / set a variable that can be used later
+			:: var: ran=true
+			
+include		:: Include a file
+			:: include: (file name)
+			:: include: moo.txt
+
+________________________________________
+Part 5. Macros                    
+________________________________________
+
+There are a few simple macros that can be used in the option line, and the action lines. When the line is read in macros are replaced with the value that they lead to
+List of macros with explanation and example:
+
+$item(<item name>)	    :: Returns item amount
+                        :: info: You have $item(coins) coins
+                        
+$storyline              :: Returns current storyline number
+                        :: info: You are at $(storyline)
+
+$health                 :: Returns current health
+
+$var(<variable name>)   :: Returns value of a variable
+
+$calc(<equation>)       :: Returns result of calculation
+                        :: info: $calc((5+3)*2) -> info: 16
+                        
+$int(<number>)          :: Returns integer value of number
+                        :: info: $int(5.5) -> info: 5
+
+________________________________________
+Part 6. Include statements                    
+________________________________________
+
+~~~~~~~~~~
+include: moo
+include: moo/moo.txt
+~~~~~~~~~~
+
+include statements can go anywhere, and once they are reached their file is loaded.
+They allow you to 'include' other text files, meaning that they are added to the files that the interpreter searches when looking for story lines and options.
