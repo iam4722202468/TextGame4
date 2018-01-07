@@ -48,15 +48,26 @@ Storyline::Storyline(std::string data_, std::string storylineName_, GameControll
             optionTitle = removeWhiteSpace(lineText, ':').erase(0,8);
             inOption = true;
         }
-        else if(clearedText.substr(0,9) == "endoption")
+        else if(clearedText.substr(0,9) == "endoption") //legacy support
         {
             options.push_back(new Option(optionString, options.size(), optionTitle, currentCondition, currentGame));
             inOption = false;
         }
-        else if(clearedText.substr(0,3) == "if:")
-            currentCondition = clearedText.erase(0,3);
-        else if(clearedText.substr(0,5) == "endif")
+        else if(clearedText.substr(0,5) == "endif" || clearedText.substr(0,3) == "end" || clearedText.substr(0,3) == "if:")
+        {
             currentCondition = "";
+            
+            if(inOption)
+            {
+                options.push_back(new Option(optionString, options.size(), optionTitle, currentCondition, currentGame));
+                inOption = false;
+            }
+            
+            optionString = "";
+            
+            if(clearedText.substr(0,3) == "if:")
+                currentCondition = clearedText.erase(0,3);
+        }
         else if(not inOption && clearedText != "")
             currentGame->parseLine(lineText, currentCondition, commands); //command ran when option is chosen
         else
